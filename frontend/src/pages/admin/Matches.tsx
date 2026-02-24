@@ -162,13 +162,25 @@ const MatchesAdmin = () => {
 
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xl">{m.teamA?.logo}</span>
+                                    <div className="w-8 h-8 flex items-center justify-center text-xl overflow-hidden">
+                                        {m.teamA?.logo?.startsWith('http') ? (
+                                            <img src={m.teamA.logo} alt="" className="w-full h-full object-contain" />
+                                        ) : (
+                                            m.teamA?.logo || "🛡️"
+                                        )}
+                                    </div>
                                     <span className="font-semibold">{m.teamA?.shortName}</span>
                                 </div>
                                 <span className="font-mono font-bold">{m.scoreA} - {m.scoreB}</span>
                                 <div className="flex items-center gap-2">
                                     <span className="font-semibold">{m.teamB?.shortName}</span>
-                                    <span className="text-xl">{m.teamB?.logo}</span>
+                                    <div className="w-8 h-8 flex items-center justify-center text-xl overflow-hidden">
+                                        {m.teamB?.logo?.startsWith('http') ? (
+                                            <img src={m.teamB.logo} alt="" className="w-full h-full object-contain" />
+                                        ) : (
+                                            m.teamB?.logo || "🛡️"
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

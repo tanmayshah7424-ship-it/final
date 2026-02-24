@@ -1,5 +1,7 @@
 const https = require('https');
 const { getIO } = require('../socket');
+const Match = require('../models/Match');
+const Team = require('../models/Team');
 
 const API_KEY = process.env.CRICAPI_KEY;
 const HOST = 'api.cricapi.com';
@@ -32,7 +34,8 @@ function fetchJSON(path) {
 }
 
 function normalizeMatch(m) {
-    const teams = (m.name || '').split(' vs ');
+    const name = m.name || '';
+    const teams = name.includes(' vs ') ? name.split(' vs ') : name.split(' v ');
     const homeTeam = teams[0]?.trim() || 'TBD';
     const awayTeam = teams[1]?.split(',')[0]?.trim() || 'TBD';
 
@@ -46,8 +49,17 @@ function normalizeMatch(m) {
         if (awayInn) awayScore = `${awayInn.r}/${awayInn.w} (${awayInn.o})`;
     }
 
-    const homeInfo = m.teamInfo?.find(t => t.name?.toLowerCase().includes(homeTeam.toLowerCase().substring(0, 4)));
-    const awayInfo = m.teamInfo?.find(t => t.name?.toLowerCase().includes(awayTeam.toLowerCase().substring(0, 4)));
+    // Improve team info matching
+    const homeInfo = m.teamInfo?.find(t => {
+        const tName = (t.name || '').toLowerCase();
+        const hName = homeTeam.toLowerCase();
+        return tName.includes(hName) || hName.includes(tName);
+    });
+    const awayInfo = m.teamInfo?.find(t => {
+        const tName = (t.name || '').toLowerCase();
+        const aName = awayTeam.toLowerCase();
+        return tName.includes(aName) || aName.includes(tName);
+    });
 
     // Determine status
     let status = 'upcoming';
@@ -67,7 +79,7 @@ function normalizeMatch(m) {
         tournament: m.matchType?.toUpperCase() || 'International',
         status,
         venue: m.venue || '',
-        date: m.dateTimeGMT ? new Date(m.dateTimeGMT).toLocaleDateString() : '',
+        date: m.dateTimeGMT || '', // Store original date string
         time: m.dateTimeGMT ? new Date(m.dateTimeGMT).toLocaleTimeString() : '',
         homeTeam,
         awayTeam,
@@ -79,6 +91,62 @@ function normalizeMatch(m) {
         matchType: m.matchType || 'odi',
         source: 'cricapi',
     };
+}
+
+async function syncToDatabase(normalizedMatches) {
+    for (const m of normalizedMatches) {
+        try {
+            // 1. Ensure Teams exist
+            let homeTeam = await Team.findOneAndUpdate(
+                { externalId: m.homeTeam, externalProvider: 'cricapi' },
+                {
+                    name: m.homeTeam,
+                    shortName: m.homeTeam.substring(0, 3).toUpperCase(),
+                    sport: 'cricket',
+                    externalId: m.homeTeam,
+                    externalProvider: 'cricapi',
+                    logo: m.homeBadge || '🏆'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            let awayTeam = await Team.findOneAndUpdate(
+                { externalId: m.awayTeam, externalProvider: 'cricapi' },
+                {
+                    name: m.awayTeam,
+                    shortName: m.awayTeam.substring(0, 3).toUpperCase(),
+                    sport: 'cricket',
+                    externalId: m.awayTeam,
+                    externalProvider: 'cricapi',
+                    logo: m.awayBadge || '🏆'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            // 2. Sync Match
+            await Match.findOneAndUpdate(
+                { externalId: m.id, externalProvider: 'cricapi' },
+                {
+                    sport: 'cricket',
+                    tournament: m.tournament,
+                    status: m.status, // Ensure this is the normalized 'live', 'upcoming', or 'completed'
+                    venue: m.venue || 'TBD',
+                    date: m.date ? new Date(m.date) : new Date(), // Date required by schema
+                    teamA: homeTeam._id,
+                    teamB: awayTeam._id,
+                    scoreA: m.homeScore,
+                    scoreB: m.awayScore,
+                    summary: m.summary, // Original raw status goes here
+                    overs: m.overs || '',
+                    externalId: m.id,
+                    externalProvider: 'cricapi'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }
+            );
+        } catch (error) {
+            console.error(`🏏 Error syncing match ${m.id} to DB:`, error.message);
+        }
+    }
 }
 
 async function poll() {
@@ -111,6 +179,9 @@ async function poll() {
 
         cachedMatches = matches;
         console.log(`🏏 CricAPI: cached ${matches.length} matches (${matches.filter(m => m.status === 'live').length} live)`);
+
+        // Sync to MongoDB
+        await syncToDatabase(matches);
     } catch (error) {
         console.error('🏏 CricAPI Poll Error:', error.message);
     }

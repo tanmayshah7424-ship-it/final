@@ -178,10 +178,12 @@ const CricketMatchCenter = () => {
                         <div className="grid grid-cols-3 items-center gap-4">
                             {/* Team A */}
                             <div className="text-center space-y-2">
-                                {match.homeBadge ? (
+                                {match.homeBadge?.startsWith('http') ? (
                                     <img src={match.homeBadge} alt="" className="w-16 h-16 mx-auto rounded-full object-contain bg-secondary/30 p-1" />
                                 ) : (
-                                    <div className="w-16 h-16 mx-auto rounded-full bg-secondary flex items-center justify-center text-2xl">🏏</div>
+                                    <div className="w-16 h-16 mx-auto rounded-full bg-secondary flex items-center justify-center text-2xl">
+                                        {match.homeBadge || '🏏'}
+                                    </div>
                                 )}
                                 <p className="font-bold text-sm leading-tight">{match.homeTeam}</p>
                                 <div className="bg-secondary/40 rounded-xl p-3">
@@ -202,10 +204,12 @@ const CricketMatchCenter = () => {
 
                             {/* Team B */}
                             <div className="text-center space-y-2">
-                                {match.awayBadge ? (
+                                {match.awayBadge?.startsWith('http') ? (
                                     <img src={match.awayBadge} alt="" className="w-16 h-16 mx-auto rounded-full object-contain bg-secondary/30 p-1" />
                                 ) : (
-                                    <div className="w-16 h-16 mx-auto rounded-full bg-secondary flex items-center justify-center text-2xl">🏏</div>
+                                    <div className="w-16 h-16 mx-auto rounded-full bg-secondary flex items-center justify-center text-2xl">
+                                        {match.awayBadge || '🏏'}
+                                    </div>
                                 )}
                                 <p className="font-bold text-sm leading-tight">{match.awayTeam}</p>
                                 <div className="bg-secondary/40 rounded-xl p-3">

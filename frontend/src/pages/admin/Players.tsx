@@ -3,7 +3,10 @@ import { playersAPI, teamsAPI } from "@/api/endpoints";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const PlayersAdmin = () => {
     const [players, setPlayers] = useState<any[]>([]);
@@ -11,7 +14,13 @@ const PlayersAdmin = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [form, setForm] = useState({ name: "", teamId: "", role: "", sport: "cricket" });
+    const [form, setForm] = useState({
+        name: "", teamId: "", role: "", sport: "cricket",
+        description: "", short_description: "", image_url: ""
+    });
+    const [submitting, setSubmitting] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+    const { toast } = useToast();
 
     useEffect(() => {
         Promise.all([playersAPI.getAll(), teamsAPI.getAll()])
@@ -23,36 +32,18 @@ const PlayersAdmin = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const resetForm = () => {
-        setForm({ name: "", teamId: "", role: "", sport: "cricket" });
-        setEditingId(null);
-        setShowForm(false);
-    };
-
     const fetchPlayers = async () => {
         const res = await playersAPI.getAll();
         setPlayers(res.data);
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            if (editingId) {
-                await playersAPI.update(editingId, form);
-            } else {
-                await playersAPI.create(form);
-            }
-            resetForm();
-            fetchPlayers();
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleEdit = (p: any) => {
-        setForm({ name: p.name, teamId: p.teamId?._id || p.teamId, role: p.role, sport: p.sport });
-        setEditingId(p._id);
-        setShowForm(true);
+    const resetForm = () => {
+        setForm({
+            name: "", teamId: "", role: "", sport: "cricket",
+            description: "", short_description: "", image_url: ""
+        });
+        setEditingId(null);
+        setShowForm(false);
     };
 
     const handleDelete = async (id: string) => {
@@ -65,6 +56,97 @@ const PlayersAdmin = () => {
         }
     };
 
+    // ... handle handleSubmit and handleEdit ...
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            let playerId = editingId;
+            if (editingId) {
+                await playersAPI.update(editingId, form);
+            } else {
+                const res = await playersAPI.create(form);
+                playerId = res.data._id;
+            }
+
+            // Sync to Supabase (Non-blocking)
+            if (playerId) {
+                try {
+                    const { error: sbError } = await supabase
+                        .from("players")
+                        .upsert({
+                            id: playerId as any,
+                            name: form.name,
+                            description: form.description,
+                            short_description: form.short_description,
+                            image_url: form.image_url,
+                            sport: form.sport,
+                            updated_at: new Date().toISOString()
+                        } as any);
+
+                    if (sbError) {
+                        console.warn("Supabase sync failed:", sbError);
+                        toast({
+                            variant: "destructive",
+                            title: "Sync Warning",
+                            description: "Primary database updated, but Supabase sync failed. Bio and media might be outdated."
+                        });
+                    }
+                } catch (sbErr: any) {
+                    console.error("Supabase network error:", sbErr);
+                    toast({
+                        variant: "destructive",
+                        title: "Sync Error",
+                        description: "Could not connect to Supabase for enrichment sync. check your connection."
+                    });
+                }
+            }
+
+            toast({ title: "Success", description: "Player saved successfully." });
+            resetForm();
+            fetchPlayers();
+        } catch (err: any) {
+            console.error(err);
+            toast({ variant: "destructive", title: "Error", description: err.message });
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleEdit = async (p: any) => {
+        setLoading(true);
+        try {
+            const { data: sbData } = await supabase
+                .from("players")
+                .select("description, short_description, image_url, sport")
+                .eq("id", p._id)
+                .single();
+
+            setForm({
+                name: p.name,
+                teamId: p.teamId?._id || p.teamId,
+                role: p.role,
+                sport: p.sport || (sbData as any)?.sport || "cricket",
+                description: (sbData as any)?.description || "",
+                short_description: (sbData as any)?.short_description || "",
+                image_url: (sbData as any)?.image_url || ""
+            });
+            setEditingId(p._id);
+            setShowForm(true);
+        } catch (err) {
+            console.error(err);
+            setForm({
+                name: p.name, teamId: p.teamId?._id || p.teamId, role: p.role, sport: p.sport,
+                description: "", short_description: "", image_url: ""
+            });
+            setEditingId(p._id);
+            setShowForm(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // UI render part
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -102,11 +184,68 @@ const PlayersAdmin = () => {
                                 <option value="cricket">Cricket</option>
                                 <option value="football">Football</option>
                                 <option value="basketball">Basketball</option>
-                                <option value="tennis">Tennis</option>
                             </select>
                         </div>
+
+                        <div className="space-y-2 sm:col-span-2">
+                            <Label>Short Description (Wiki)</Label>
+                            <Input value={form.short_description} onChange={(e) => setForm({ ...form, short_description: e.target.value })} placeholder="e.g. Indian cricketer (born 1988)" className="bg-secondary/50" />
+                        </div>
+
+                        <div className="space-y-2 sm:col-span-2">
+                            <Label>Profile Image URL (Wiki)</Label>
+                            <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." className="bg-secondary/50" />
+                        </div>
+
+                        <div className="space-y-2 sm:col-span-2">
+                            <div className="flex items-center justify-between">
+                                <Label>Full Biography (Wiki)</Label>
+                                {editingId && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={async () => {
+                                            setSyncing(true);
+                                            try {
+                                                const { data, error } = await supabase.functions.invoke('fetch-wikipedia-bio', {
+                                                    body: { playerId: editingId, playerName: form.name }
+                                                });
+                                                if (error) throw error;
+                                                setForm({
+                                                    ...form,
+                                                    description: data.description,
+                                                    short_description: data.shortDescription || form.short_description,
+                                                    image_url: data.imageUrl || form.image_url
+                                                });
+                                                toast({ title: "Synced", description: "Enriched data fetched from Wikipedia." });
+                                            } catch (err: any) {
+                                                console.error(err);
+                                                toast({ variant: "destructive", title: "Sync failed", description: err.message });
+                                            } finally {
+                                                setSyncing(false);
+                                            }
+                                        }}
+                                        disabled={syncing}
+                                        className="h-7 text-[10px] gap-1 px-2"
+                                    >
+                                        {syncing ? <Loader2 className="w-3 h-3 animate-spin" /> : "🌐"}
+                                        Sync Wikipedia
+                                    </Button>
+                                )}
+                            </div>
+                            <Textarea
+                                value={form.description}
+                                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                placeholder="Enter player biography..."
+                                className="bg-secondary/50 min-h-[120px]"
+                            />
+                        </div>
                     </div>
-                    <Button type="submit">{editingId ? "Update" : "Create"} Player</Button>
+                    <Button type="submit" disabled={submitting} className="gap-2">
+                        {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                        {editingId ? "Update" : "Create"} Player
+                    </Button>
                 </form>
             )}
 

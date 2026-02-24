@@ -69,20 +69,36 @@ const Index = () => {
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
 
       <div className="flex items-center justify-between mb-6">
-        <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-full border ${sportColors[match.sport] || ""}`}>
-          {match.sport.toUpperCase()}
+        <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-full border ${sportColors[match.sport || ''] || ""}`}>
+          {(match.sport || 'unknown').toUpperCase()}
         </span>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-live animate-live-pulse" />
-          <span className="text-xs font-bold text-live tracking-wide">LIVE</span>
-        </div>
+        {match.status === 'live' ? (
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-live animate-live-pulse" />
+            <span className="text-xs font-bold text-live tracking-wide">LIVE</span>
+          </div>
+        ) : match.status === 'upcoming' ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-muted-foreground tracking-wide uppercase">Upcoming</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-muted-foreground tracking-wide uppercase">Finished</span>
+          </div>
+        )}
       </div>
 
       <div className="space-y-6">
         <div className="flex items-center justify-between group-hover:translate-x-1 transition-transform gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <span className="text-4xl filter drop-shadow-md shrink-0">{match.teamA?.logo}</span>
-            <span className="font-semibold text-lg tracking-tight truncate">{match.teamA?.shortName}</span>
+            {match.teamA?.logo?.startsWith('http') ? (
+              <img src={match.teamA.logo} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
+            ) : (
+              <span className="text-4xl filter drop-shadow-md shrink-0">{match.teamA?.logo || '🏟️'}</span>
+            )}
+            <span className="font-semibold text-lg tracking-tight truncate">
+              {match.teamA?.shortName?.startsWith('http') ? (match.teamA?.name || 'TBD') : (match.teamA?.shortName || 'TBD')}
+            </span>
           </div>
           <span className="font-mono font-bold text-xl sm:text-2xl text-primary animate-score-pop text-right whitespace-nowrap">
             {match.scoreA}
@@ -90,8 +106,14 @@ const Index = () => {
         </div>
         <div className="flex items-center justify-between group-hover:translate-x-1 transition-transform delay-75 gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <span className="text-4xl filter drop-shadow-md shrink-0">{match.teamB?.logo}</span>
-            <span className="font-semibold text-lg tracking-tight truncate">{match.teamB?.shortName}</span>
+            {match.teamB?.logo?.startsWith('http') ? (
+              <img src={match.teamB.logo} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
+            ) : (
+              <span className="text-4xl filter drop-shadow-md shrink-0">{match.teamB?.logo || '🏟️'}</span>
+            )}
+            <span className="font-semibold text-lg tracking-tight truncate">
+              {match.teamB?.shortName?.startsWith('http') ? (match.teamB?.name || 'TBD') : (match.teamB?.shortName || 'TBD')}
+            </span>
           </div>
           <span className="font-mono font-bold text-xl sm:text-2xl text-primary text-right whitespace-nowrap">
             {match.scoreB}
@@ -101,7 +123,7 @@ const Index = () => {
 
       <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground/80">
         <p className="font-medium truncate max-w-[70%]">{match.tournament}</p>
-        <p>{match.overs || match.minute || "Live"}</p>
+        <p>{match.status === 'live' ? (match.overs || match.minute || "Live") : match.status === 'upcoming' ? new Date(match.date).toLocaleDateString() : "Finished"}</p>
       </div>
     </div>
   );
@@ -131,10 +153,20 @@ const Index = () => {
           <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-full border ${sportBadge.classes}`}>
             {sportBadge.label}
           </span>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-live animate-live-pulse" />
-            <span className="text-xs font-bold text-live tracking-wide">LIVE</span>
-          </div>
+          {match.status === 'live' ? (
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-live animate-live-pulse" />
+              <span className="text-xs font-bold text-live tracking-wide">LIVE</span>
+            </div>
+          ) : match.status === 'upcoming' ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground tracking-wide uppercase">Upcoming</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground tracking-wide uppercase">Finished</span>
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -143,9 +175,9 @@ const Index = () => {
               {match.homeBadge ? (
                 <img src={badgeUrl(match.homeBadge)} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
               ) : (
-                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "🏟️"}</span>
+                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "⚽"}</span>
               )}
-              <span className="font-semibold text-lg tracking-tight truncate">{match.homeTeam}</span>
+              <span className="font-semibold text-lg tracking-tight truncate">{match.homeTeam || 'TBD'}</span>
             </div>
             <span className="font-mono font-bold text-xl sm:text-2xl text-primary animate-score-pop text-right whitespace-nowrap">
               {match.homeScore}
@@ -156,9 +188,9 @@ const Index = () => {
               {match.awayBadge ? (
                 <img src={badgeUrl(match.awayBadge)} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
               ) : (
-                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "🏟️"}</span>
+                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "⚽"}</span>
               )}
-              <span className="font-semibold text-lg tracking-tight truncate">{match.awayTeam}</span>
+              <span className="font-semibold text-lg tracking-tight truncate">{match.awayTeam || 'TBD'}</span>
             </div>
             <span className="font-mono font-bold text-xl sm:text-2xl text-primary text-right whitespace-nowrap">
               {match.awayScore}
@@ -168,7 +200,7 @@ const Index = () => {
 
         <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground/80">
           <p className="font-medium truncate max-w-[70%]">{match.tournament}</p>
-          <p>{(match as any).status === 'live' ? 'Live' : match.time?.slice(0, 5)}</p>
+          <p>{match.status === 'live' ? 'Live' : match.status === 'upcoming' ? (match.time ? match.time.slice(0, 5) : 'Upcoming') : 'Finished'}</p>
         </div>
       </div>
     );
@@ -185,7 +217,7 @@ const Index = () => {
 
   // 1. Process Local matches first (they have priority)
   visibleLiveLocal.forEach((m) => {
-    const key = `${m.sport}-${m.teamA.name}-${m.teamB.name}`.toLowerCase().replace(/\s+/g, '');
+    const key = `${m.sport}-${m.teamA?.name || 'TBD'}-${m.teamB?.name || 'TBD'}`.toLowerCase().replace(/\s+/g, '');
     if (!uniqueKeys.has(key)) {
       uniqueKeys.add(key);
       filteredLocal.push(m);
@@ -311,14 +343,39 @@ const Index = () => {
           {(() => {
             // Merge DB upcoming + external upcoming (cricket/football)
             const externalUpcoming = externalMatches.filter((m: any) => m.status === 'upcoming');
-            const allUpcoming = [...upcomingMatches, ...externalUpcoming];
-            return allUpcoming.length === 0 ? (
+            const allUpcomingRaw = [...upcomingMatches, ...externalUpcoming];
+
+            // De-duplicate upcoming matches and filter out those already in Live section
+            const visibleUpcoming: any[] = [];
+            const upcomingKeys = new Set(uniqueKeys); // Initialize with keys from live matches
+
+            allUpcomingRaw.forEach((m: any) => {
+              const isExternal = m.source === 'cricapi' || m.source === 'thesportsdb' || !!m.externalProvider;
+              const home = isExternal ? (m.homeTeam || m.teamA?.name) : m.teamA?.name;
+              const away = isExternal ? (m.awayTeam || m.teamB?.name) : m.teamB?.name;
+              const homeLogo = isExternal ? (m.homeBadge || m.teamA?.logo) : m.teamA?.logo;
+              const awayLogo = isExternal ? (m.awayBadge || m.teamB?.logo) : m.teamB?.logo;
+
+              // If it's a local match (not from external API), ensure we have populated teams
+              if (!m.externalProvider && !m.source && (typeof m.teamA === 'string' || typeof m.teamB === 'string')) {
+                return null;
+              }
+              const key = `${m.sport}-${home || 'TBD'}-${away || 'TBD'}`.toLowerCase().replace(/\s+/g, '');
+              const reverseKey = `${m.sport}-${away || 'TBD'}-${home || 'TBD'}`.toLowerCase().replace(/\s+/g, '');
+
+              if (!upcomingKeys.has(key) && !upcomingKeys.has(reverseKey)) {
+                upcomingKeys.add(key);
+                visibleUpcoming.push(m);
+              }
+            });
+
+            return visibleUpcoming.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground bg-secondary/10 rounded-xl">
                 <p>No upcoming matches scheduled.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {allUpcoming.map((match: any) => (
+                {visibleUpcoming.map((match: any) => (
                   match.source === 'cricapi' || match.source === 'thesportsdb' ? (
                     <ExternalMatchCard key={match.id} match={match} />
                   ) : (

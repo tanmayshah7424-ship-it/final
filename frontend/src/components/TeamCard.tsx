@@ -61,8 +61,12 @@ export function TeamCard({ team, isFavorite: initialIsFavorite = false, onToggle
             </button>
 
             <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                    {team.logo || "🛡️"}
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform overflow-hidden">
+                    {team.logo?.startsWith('http') ? (
+                        <img src={team.logo} alt="" className="w-full h-full object-contain" />
+                    ) : (
+                        team.logo || "🛡️"
+                    )}
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-lg truncate">{team.name}</h3>

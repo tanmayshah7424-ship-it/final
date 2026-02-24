@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import { playersAPI } from "@/api/endpoints";
 import { ArrowLeft, User, MapPin, Calendar, Activity } from "lucide-react";
+import { PlayerBioCard } from "@/components/PlayerBioCard";
+import { supabase } from "@/integrations/supabase/client";
 
 const PlayerProfile = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [player, setPlayer] = useState<any>(null);
+    const [wikiData, setWikiData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -16,9 +19,18 @@ const PlayerProfile = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Use playersAPI which now hits our enhanced controller
+                // Fetch MongoDB data
                 const res = await playersAPI.getById(id);
                 setPlayer(res.data);
+
+                // Fetch Supabase Enrichment
+                const { data: sbData } = await supabase
+                    .from("players")
+                    .select("description, short_description, image_url")
+                    .eq("id", id)
+                    .single();
+
+                if (sbData) setWikiData(sbData as any);
             } catch (err) {
                 console.error(err);
                 setError("Failed to fetch player data.");
@@ -67,8 +79,8 @@ const PlayerProfile = () => {
                 <div className="card-glass rounded-xl p-6 sm:p-8 animate-slide-up">
                     <div className="flex flex-col sm:flex-row items-center gap-6">
                         <div className="w-32 h-32 rounded-full bg-secondary overflow-hidden shrink-0 border-4 border-background shadow-lg">
-                            {player.playerImg ? (
-                                <img src={player.playerImg} alt={player.name} className="w-full h-full object-cover" />
+                            {(wikiData?.image_url || player.playerImg) ? (
+                                <img src={wikiData?.image_url || player.playerImg} alt={player.name} className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                                     <User className="w-12 h-12" />
@@ -77,6 +89,11 @@ const PlayerProfile = () => {
                         </div>
                         <div className="text-center sm:text-left space-y-2">
                             <h1 className="text-3xl font-bold">{player.name}</h1>
+                            {wikiData?.short_description && (
+                                <p className="text-xs font-semibold text-primary uppercase tracking-wider">
+                                    {wikiData.short_description}
+                                </p>
+                            )}
                             <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-muted-foreground">
                                 {player.country && (
                                     <span className="flex items-center gap-1.5">
@@ -108,18 +125,8 @@ const PlayerProfile = () => {
                     </div>
                 </div>
 
-                {/* Biography Section */}
-                {player.biography && (
-                    <div className="card-glass rounded-xl p-6 animate-slide-up delay-75">
-                        <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-                            <User className="w-5 h-5 text-primary" />
-                            Biography
-                        </h2>
-                        <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
-                            <p>{player.biography}</p>
-                        </div>
-                    </div>
-                )}
+                {/* Biography Section (Supabase Managed) */}
+                <PlayerBioCard playerId={id || ""} initialData={wikiData} hideHeaderInfo={true} />
 
                 {/* Stats Grid */}
                 {player.stats && player.stats.length > 0 ? (

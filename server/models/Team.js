@@ -10,7 +10,9 @@ const teamSchema = new mongoose.Schema({
     wins: { type: Number, default: 0 },
 
     // New fields for detailed profile
-    cricApiId: { type: String, unique: true, sparse: true },
+    cricApiId: { type: String, unique: true, sparse: true }, // Legacy External ID
+    externalId: { type: String, sparse: true }, // Generic External ID
+    externalProvider: { type: String, enum: ['cricapi', 'thesportsdb', 'espn', 'api-sports'], sparse: true },
     captain: { type: String },
     coach: { type: String },
     ranking: { type: Number },
@@ -26,6 +28,9 @@ const teamSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true },
     logos: { type: [Object], default: [] } // For logos array from ingestion
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+// Index for quick lookup during ingestion
+teamSchema.index({ externalId: 1, externalProvider: 1 }, { unique: true, sparse: true });
 
 teamSchema.virtual('primary_logo').get(function () {
     if (this.logos && this.logos.length > 0) {

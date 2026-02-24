@@ -1,0 +1,594 @@
+{
+  "teams": [
+    {
+      "id": "699bfb358ddc905b391acb5e",
+      "name": "Mumbai Indians",
+      "sport": "cricket",
+      "logo": "🏏"
+    },
+    {
+      "id": "699bfb358ddc905b391acb5f",
+      "name": "Chennai Super Kings",
+      "sport": "cricket",
+      "logo": "🦁"
+    },
+    {
+      "id": "699bfb358ddc905b391acb60",
+      "name": "Royal Challengers",
+      "sport": "cricket",
+      "logo": "👑"
+    },
+    {
+      "id": "699bfb358ddc905b391acb61",
+      "name": "Delhi Capitals",
+      "sport": "cricket",
+      "logo": "🦅"
+    },
+    {
+      "id": "699bfb358ddc905b391acb62",
+      "name": "Manchester United",
+      "sport": "football",
+      "logo": "⚽"
+    },
+    {
+      "id": "699bfb358ddc905b391acb63",
+      "name": "Liverpool FC",
+      "sport": "football",
+      "logo": "⚽"
+    },
+    {
+      "id": "699bfb358ddc905b391acb64",
+      "name": "LA Lakers",
+      "sport": "basketball",
+      "logo": "🏀"
+    },
+    {
+      "id": "699bfb358ddc905b391acb65",
+      "name": "Golden State Warriors",
+      "sport": "basketball",
+      "logo": "🏀"
+    },
+    {
+      "id": "699bfb358ddc905b391acb66",
+      "name": "Kolkata Knight Riders",
+      "sport": "cricket",
+      "logo": "⚔️"
+    },
+    {
+      "id": "699bfb358ddc905b391acb67",
+      "name": "Barcelona FC",
+      "sport": "football",
+      "logo": "⚽"
+    },
+    {
+      "id": "699d36c440909c11ed6fec69",
+      "name": "Karnataka",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/38-637897796420763611.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6a",
+      "name": "Jammu and Kashmir",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/35-637897795101008676.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6b",
+      "name": "Pakistan A",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/67-637877074931980375.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6c",
+      "name": "England Lions",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/1739-637934886041420623.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6d",
+      "name": "Limpopo",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/42-637991993542281273.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6e",
+      "name": "Knights",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/40-637992688759741358.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec6f",
+      "name": "Border",
+      "sport": "cricket",
+      "logo": "https://h.cricapi.com/img/icon512.png"
+    },
+    {
+      "id": "699d36c440909c11ed6fec70",
+      "name": "South Africa Emerging Players",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/273-637877069629067075.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec71",
+      "name": "Eastern Storm",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/22-637992689531725146.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec72",
+      "name": "Mpumalanga Rhinos",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/49-637991993271802283.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec73",
+      "name": "South Western Districts",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/85-637993498736049006.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec74",
+      "name": "Northern Cape",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/61-637991981464151764.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec75",
+      "name": "Bengal",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/12-637897789312826453.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec76",
+      "name": "Andhra",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/2-637897787068768481.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec78",
+      "name": "Jharkhand",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/36-637897796049905291.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec79",
+      "name": "Uttarakhand",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/95-637897806132002810.png?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7b",
+      "name": "West Indies Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/102-637877078650138806.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7c",
+      "name": "Sri Lanka Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/4191-638101639309122979.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7d",
+      "name": "India A Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/3151-638049769196782817.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7e",
+      "name": "Bangladesh A Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/10-637877074628008258.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7f",
+      "name": "Pakistan A Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/67-637877074931980375.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec80",
+      "name": "Sri Lanka A Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/4191-638101639309122979.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec81",
+      "name": "Zimbabwe",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/575-637877079629985215.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec82",
+      "name": "West Indies",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/100-637877077978319234.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec83",
+      "name": "India",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/31-637877061080567215.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec84",
+      "name": "South Africa",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/82-637877071839088912.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec85",
+      "name": "England",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/23-637877072894080569.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec86",
+      "name": "Sri Lanka",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/4191-638101639309122979.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec87",
+      "name": "New Zealand",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/57-637877076980737903.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec88",
+      "name": "Pakistan",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/66-637877075103236690.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec89",
+      "name": "Australia",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/6-637877070670541994.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8a",
+      "name": "Oman",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/64-637877083212505394.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8b",
+      "name": "Western Australia",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/103-637987555730367982.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8c",
+      "name": "Victoria",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/96-637987557199223762.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8d",
+      "name": "Tasmania",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/88-637987559070396403.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8e",
+      "name": "New South Wales",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/56-637991992698313262.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec8f",
+      "name": "Queensland",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/73-637992667453177840.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec90",
+      "name": "South Australia",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/84-637993500332119314.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec91",
+      "name": "South Africa Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/83-637877067733114809.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec92",
+      "name": "Pakistan Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/67-637877074931980375.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec93",
+      "name": "Australia Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/7-637877070884402012.webp?w=48"
+    },
+    {
+      "id": "699d36c440909c11ed6fec94",
+      "name": "India Women",
+      "sport": "cricket",
+      "logo": "https://g.cricapi.com/iapi/32-637877061328728555.webp?w=48"
+    },
+    {
+      "id": "699d36cf40909c11ed6fec95",
+      "name": "Melbourne Victory",
+      "sport": "football",
+      "logo": "⚽"
+    },
+    {
+      "id": "699d36cf40909c11ed6fec96",
+      "name": "Western Sydney Wanderers FC",
+      "sport": "football",
+      "logo": "⚽"
+    }
+  ],
+  "matches": [
+    {
+      "id": "699bfb358ddc905b391acb74",
+      "status": "live",
+      "sport": "cricket",
+      "teamA": "Mumbai Indians",
+      "teamB": "Chennai Super Kings"
+    },
+    {
+      "id": "699bfb358ddc905b391acb75",
+      "status": "live",
+      "sport": "football",
+      "teamA": "Manchester United",
+      "teamB": "Liverpool FC"
+    },
+    {
+      "id": "699bfb358ddc905b391acb76",
+      "status": "live",
+      "sport": "basketball",
+      "teamA": "LA Lakers",
+      "teamB": "Golden State Warriors"
+    },
+    {
+      "id": "699bfb358ddc905b391acb77",
+      "status": "upcoming",
+      "sport": "cricket",
+      "teamA": "Royal Challengers",
+      "teamB": "Delhi Capitals"
+    },
+    {
+      "id": "699bfb358ddc905b391acb78",
+      "status": "upcoming",
+      "sport": "football",
+      "teamA": "Barcelona FC",
+      "teamB": "Manchester United"
+    },
+    {
+      "id": "699bfb358ddc905b391acb79",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Royal Challengers",
+      "teamB": "Kolkata Knight Riders"
+    },
+    {
+      "id": "699bfb358ddc905b391acb7a",
+      "status": "completed",
+      "sport": "football",
+      "teamA": "Liverpool FC",
+      "teamB": "Manchester United"
+    },
+    {
+      "id": "699d36c440909c11ed6fec77",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Bengal",
+      "teamB": "Andhra",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d36c440909c11ed6fec7a",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Jharkhand",
+      "teamB": "Uttarakhand",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d36cf40909c11ed6fec97",
+      "status": "upcoming",
+      "sport": "football",
+      "teamA": "Melbourne Victory",
+      "teamB": "Western Sydney Wanderers FC",
+      "externalProvider": "thesportsdb"
+    },
+    {
+      "id": "699d37ed2c275a5cb64fd088",
+      "status": "live",
+      "sport": "football",
+      "teamA": "Liverpool FC",
+      "teamB": "Manchester United"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec98",
+      "status": "live",
+      "sport": "cricket",
+      "teamA": "Karnataka",
+      "teamB": "Jammu and Kashmir",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec99",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Pakistan A",
+      "teamB": "England Lions",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9a",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Limpopo",
+      "teamB": "Knights",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9b",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Border",
+      "teamB": "South Africa Emerging Players",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9c",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Eastern Storm",
+      "teamB": "Mpumalanga Rhinos",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9d",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "South Western Districts",
+      "teamB": "Northern Cape",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9e",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Pakistan A",
+      "teamB": "England Lions",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fec9f",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "West Indies Women",
+      "teamB": "Sri Lanka Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca0",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "West Indies Women",
+      "teamB": "Sri Lanka Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca1",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "India A Women",
+      "teamB": "Bangladesh A Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca2",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Bangladesh A Women",
+      "teamB": "Pakistan A Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca3",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "India A Women",
+      "teamB": "Sri Lanka A Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca4",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Zimbabwe",
+      "teamB": "West Indies",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca5",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "India",
+      "teamB": "South Africa",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca6",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "England",
+      "teamB": "Sri Lanka",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca7",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "New Zealand",
+      "teamB": "Pakistan",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca8",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Australia",
+      "teamB": "Oman",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6feca9",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Western Australia",
+      "teamB": "Victoria",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fecaa",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Tasmania",
+      "teamB": "New South Wales",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fecab",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Queensland",
+      "teamB": "South Australia",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fecac",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "South Africa Women",
+      "teamB": "Pakistan Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fecad",
+      "status": "live",
+      "sport": "cricket",
+      "teamA": "Australia Women",
+      "teamB": "India Women",
+      "externalProvider": "cricapi"
+    },
+    {
+      "id": "699d3b0e40909c11ed6fecae",
+      "status": "completed",
+      "sport": "cricket",
+      "teamA": "Australia Women",
+      "teamB": "India Women",
+      "externalProvider": "cricapi"
+    }
+  ]
+}

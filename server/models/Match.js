@@ -15,8 +15,13 @@ const matchSchema = new mongoose.Schema({
     shortName: { type: String }, // For ingestion parity
     overs: { type: String },
     minute: { type: String },
-    espnId: { type: String, unique: true, sparse: true }, // External ID for ingestion
+    espnId: { type: String, unique: true, sparse: true }, // Legacy External ID
+    externalId: { type: String, sparse: true }, // Generic External ID
+    externalProvider: { type: String, enum: ['cricapi', 'thesportsdb', 'espn', 'api-sports'], sparse: true },
 }, { timestamps: true });
+
+// Index for quick lookup during ingestion
+matchSchema.index({ externalId: 1, externalProvider: 1 }, { unique: true, sparse: true });
 
 // Text index for search
 matchSchema.index({ tournament: 'text', venue: 'text', summary: 'text' });

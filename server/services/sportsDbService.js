@@ -1,5 +1,7 @@
 const https = require('https');
 const { getIO } = require('../socket');
+const Match = require('../models/Match');
+const Team = require('../models/Team');
 
 const API_KEY = process.env.SPORTSDB_API_KEY || '3';
 const BASE = `https://www.thesportsdb.com/api/v1/json/${API_KEY}`;
@@ -56,6 +58,66 @@ function normalizeEvent(ev) {
     };
 }
 
+async function syncToDatabase(normalizedMatches) {
+    for (const m of normalizedMatches) {
+        try {
+            // 1. Ensure Teams exist
+            let homeTeam = await Team.findOneAndUpdate(
+                { externalId: m.homeId, externalProvider: 'thesportsdb' },
+                {
+                    name: m.homeTeam,
+                    shortName: m.homeTeam.substring(0, 3).toUpperCase(),
+                    sport: 'football',
+                    externalId: m.homeId,
+                    externalProvider: 'thesportsdb',
+                    logo: m.homeBadge || '⚽'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            let awayTeam = await Team.findOneAndUpdate(
+                { externalId: m.awayId, externalProvider: 'thesportsdb' },
+                {
+                    name: m.awayTeam,
+                    shortName: m.awayTeam.substring(0, 3).toUpperCase(),
+                    sport: 'football',
+                    externalId: m.awayId,
+                    externalProvider: 'thesportsdb',
+                    logo: m.awayBadge || '⚽'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            const matchDate = m.date ? new Date(m.date) : new Date();
+            if (isNaN(matchDate.getTime())) {
+                console.warn(`⚽ Invalid date for match ${m.id}: ${m.date}, defaulting to today`);
+            }
+
+            // 2. Sync Match
+            await Match.findOneAndUpdate(
+                { externalId: m.id, externalProvider: 'thesportsdb' },
+                {
+                    sport: 'football',
+                    tournament: m.tournament,
+                    status: m.status,
+                    venue: m.venue || 'TBD',
+                    date: isNaN(matchDate.getTime()) ? new Date() : matchDate,
+                    teamA: homeTeam._id,
+                    teamB: awayTeam._id,
+                    scoreA: m.homeScore,
+                    scoreB: m.awayScore,
+                    summary: `${m.homeTeam} vs ${m.awayTeam}`,
+                    externalId: m.id,
+                    externalProvider: 'thesportsdb'
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+        } catch (error) {
+            console.error(`⚽ Error syncing match ${m.id} to DB:`, error.message);
+        }
+    }
+}
+
 async function poll() {
     try {
         const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -82,6 +144,9 @@ async function poll() {
 
         cachedMatches = normalized;
         console.log(`📡 TheSportsDB: cached ${normalized.length} football events for ${today}`);
+
+        // Sync to MongoDB
+        await syncToDatabase(normalized);
     } catch (err) {
         console.error('TheSportsDB poll error:', err.message);
     }

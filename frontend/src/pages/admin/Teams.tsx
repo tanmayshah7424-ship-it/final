@@ -87,8 +87,8 @@ const TeamsAdmin = () => {
                             <Input value={form.shortName} onChange={(e) => setForm({ ...form, shortName: e.target.value })} required className="bg-secondary/50" />
                         </div>
                         <div className="space-y-2">
-                            <Label>Logo (emoji)</Label>
-                            <Input value={form.logo} onChange={(e) => setForm({ ...form, logo: e.target.value })} className="bg-secondary/50" />
+                            <Label>Logo (emoji or URL)</Label>
+                            <Input value={form.logo} onChange={(e) => setForm({ ...form, logo: e.target.value })} className="bg-secondary/50" placeholder="🏆 or https://..." />
                         </div>
                         <div className="space-y-2">
                             <Label>Sport</Label>
@@ -112,7 +112,13 @@ const TeamsAdmin = () => {
                 <div className="space-y-2">
                     {teams.map((team) => (
                         <div key={team._id} className="card-glass rounded-lg p-4 flex items-center gap-4">
-                            <span className="text-2xl">{team.logo}</span>
+                            <div className="w-10 h-10 flex items-center justify-center text-2xl overflow-hidden shrink-0">
+                                {team.logo?.startsWith('http') ? (
+                                    <img src={team.logo} alt="" className="w-full h-full object-contain" />
+                                ) : (
+                                    team.logo || "🛡️"
+                                )}
+                            </div>
                             <div className="flex-1">
                                 <p className="font-semibold">{team.name}</p>
                                 <p className="text-xs text-muted-foreground">{team.shortName} • {team.sport}</p>

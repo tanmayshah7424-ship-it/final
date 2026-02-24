@@ -122,20 +122,28 @@ const Matches = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{match.teamA?.logo}</span>
-                      <span className="font-semibold">{match.teamA?.shortName}</span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between group-hover:translate-x-1 transition-transform">
+                    <div className="flex items-center gap-3">
+                      {match.teamA?.logo?.startsWith('http') ? (
+                        <img src={match.teamA.logo} alt="" className="w-8 h-8 rounded-sm object-contain shrink-0" />
+                      ) : (
+                        <span className="text-2xl shrink-0">{match.teamA?.logo || '🏟️'}</span>
+                      )}
+                      <span className="font-semibold">{match.teamA?.shortName || 'TBD'}</span>
                     </div>
-                    <span className="font-mono font-bold">{match.scoreA}</span>
+                    <span className="font-mono font-bold text-lg">{match.scoreA}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{match.teamB?.logo}</span>
-                      <span className="font-semibold">{match.teamB?.shortName}</span>
+                  <div className="flex items-center justify-between group-hover:translate-x-1 transition-transform">
+                    <div className="flex items-center gap-3">
+                      {match.teamB?.logo?.startsWith('http') ? (
+                        <img src={match.teamB.logo} alt="" className="w-8 h-8 rounded-sm object-contain shrink-0" />
+                      ) : (
+                        <span className="text-2xl shrink-0">{match.teamB?.logo || '🏟️'}</span>
+                      )}
+                      <span className="font-semibold">{match.teamB?.shortName || 'TBD'}</span>
                     </div>
-                    <span className="font-mono font-bold">{match.scoreB}</span>
+                    <span className="font-mono font-bold text-lg">{match.scoreB}</span>
                   </div>
                 </div>
 
