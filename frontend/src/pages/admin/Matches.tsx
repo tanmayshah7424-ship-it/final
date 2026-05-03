@@ -81,12 +81,12 @@ const MatchesAdmin = () => {
                 <form onSubmit={handleCreate} className="card-glass rounded-xl p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold">New Match</h2>
-                        <button type="button" onClick={() => setShowForm(false)}><X className="w-5 h-5" /></button>
+                        <button type="button" onClick={() => setShowForm(false)} title="Close form"><X className="w-5 h-5" /></button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Sport</Label>
-                            <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
+                            <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} title="Select Sport" className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="cricket">Cricket</option>
                                 <option value="football">Football</option>
                                 <option value="basketball">Basketball</option>
@@ -106,14 +106,14 @@ const MatchesAdmin = () => {
                         </div>
                         <div className="space-y-2">
                             <Label>Team A</Label>
-                            <select value={form.teamA} onChange={(e) => setForm({ ...form, teamA: e.target.value })} required className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
+                            <select value={form.teamA} onChange={(e) => setForm({ ...form, teamA: e.target.value })} title="Select Team A" required className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="">Select team</option>
                                 {teams.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
                             </select>
                         </div>
                         <div className="space-y-2">
                             <Label>Team B</Label>
-                            <select value={form.teamB} onChange={(e) => setForm({ ...form, teamB: e.target.value })} required className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
+                            <select value={form.teamB} onChange={(e) => setForm({ ...form, teamB: e.target.value })} title="Select Team B" required className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="">Select team</option>
                                 {teams.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
                             </select>

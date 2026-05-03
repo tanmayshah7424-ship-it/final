@@ -168,7 +168,7 @@ const CricketMatchCenter = () => {
                                 ) : (
                                     <span className="text-xs text-muted-foreground font-medium capitalize">{match.status}</span>
                                 )}
-                                <button onClick={() => refetch()} className="p-2 rounded-lg border border-border hover:bg-secondary transition-colors">
+                                <button onClick={() => refetch()} title="Refresh match data" className="p-2 rounded-lg border border-border hover:bg-secondary transition-colors">
                                     <RefreshCw className="w-4 h-4 text-muted-foreground" />
                                 </button>
                             </div>

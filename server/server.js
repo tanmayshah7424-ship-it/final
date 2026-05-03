@@ -43,6 +43,7 @@ app.use('/api/player', require('./routes/player'));
 app.use('/api/system', require('./routes/system'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/cricbuzz', require('./routes/cricbuzz'));
+app.use('/api/ai', require('./routes/ai'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date() }));

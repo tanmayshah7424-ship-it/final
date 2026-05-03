@@ -1,0 +1,8 @@
+crewai
+chromadb
+sentence-transformers
+google-generativeai
+python-dotenv
+requests
+pydantic
+langchain-google-genai
