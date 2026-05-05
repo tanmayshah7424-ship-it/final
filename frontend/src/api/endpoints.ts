@@ -10,7 +10,7 @@ import api from './axios';
 
 // ---- Teams ----
 export const teamsAPI = {
-    getAll: () => api.get('/teams'),
+    getAll: (params?: { sport?: string }) => api.get('/teams', { params }),
     getById: (id: string) => api.get(`/teams/${id}`),
     create: (data: any) => api.post('/teams', data),
     update: (id: string, data: any) => api.put(`/teams/${id}`, data),

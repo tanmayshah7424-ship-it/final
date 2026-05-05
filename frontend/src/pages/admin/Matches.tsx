@@ -18,7 +18,10 @@ const MatchesAdmin = () => {
     });
 
     useEffect(() => {
-        Promise.all([matchesAPI.getAll(), teamsAPI.getAll()])
+        Promise.all([
+            matchesAPI.getAll({ sport: 'cricket' }), 
+            teamsAPI.getAll({ sport: 'cricket' })
+        ])
             .then(([mRes, tRes]) => {
                 setMatches(mRes.data);
                 setTeams(tRes.data);
@@ -28,7 +31,7 @@ const MatchesAdmin = () => {
     }, []);
 
     const fetchMatches = async () => {
-        const res = await matchesAPI.getAll();
+        const res = await matchesAPI.getAll({ sport: 'cricket' });
         setMatches(res.data);
     };
 
@@ -88,8 +91,6 @@ const MatchesAdmin = () => {
                             <Label>Sport</Label>
                             <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} title="Select Sport" className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="cricket">Cricket</option>
-                                <option value="football">Football</option>
-                                <option value="basketball">Basketball</option>
                             </select>
                         </div>
                         <div className="space-y-2">

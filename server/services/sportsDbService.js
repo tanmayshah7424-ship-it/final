@@ -39,7 +39,7 @@ function normalizeEvent(ev) {
 
     return {
         id: ev.idEvent,
-        sport: 'football',
+        sport: 'cricket',
         tournament: ev.strLeague || '',
         status,
         venue: ev.strVenue || '',
@@ -67,10 +67,10 @@ async function syncToDatabase(normalizedMatches) {
                 {
                     name: m.homeTeam,
                     shortName: m.homeTeam.substring(0, 3).toUpperCase(),
-                    sport: 'football',
+                    sport: 'cricket',
                     externalId: m.homeId,
                     externalProvider: 'thesportsdb',
-                    logo: m.homeBadge || '⚽'
+                    logo: m.homeBadge || '🏏'
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
@@ -80,10 +80,10 @@ async function syncToDatabase(normalizedMatches) {
                 {
                     name: m.awayTeam,
                     shortName: m.awayTeam.substring(0, 3).toUpperCase(),
-                    sport: 'football',
+                    sport: 'cricket',
                     externalId: m.awayId,
                     externalProvider: 'thesportsdb',
-                    logo: m.awayBadge || '⚽'
+                    logo: m.awayBadge || '🏏'
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
@@ -97,7 +97,7 @@ async function syncToDatabase(normalizedMatches) {
             await Match.findOneAndUpdate(
                 { externalId: m.id, externalProvider: 'thesportsdb' },
                 {
-                    sport: 'football',
+                    sport: 'cricket',
                     tournament: m.tournament,
                     status: m.status,
                     venue: m.venue || 'TBD',
@@ -119,9 +119,13 @@ async function syncToDatabase(normalizedMatches) {
 }
 
 async function poll() {
+    const System = require('../config/systemConfig');
+    if (System.apiMode === 'manual') return;
+
     try {
         const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-        const url = `${BASE}/eventsday.php?d=${today}&s=Soccer`;
+        // Strictly poll for Cricket, never Soccer
+        const url = `${BASE}/eventsday.php?d=${today}&s=Cricket`;
         const data = await fetchJSON(url);
         const events = data.events || [];
 

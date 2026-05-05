@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,9 +46,6 @@
 
     /* Sport Specific Colors */
     --sport-cricket: 142 70% 50%;
-    --sport-football: 217 91% 60%;
-    --sport-basketball: 25 95% 55%;
-    --sport-tennis: 65 92% 50%;
 
     /* Gradients & Effects */
     --gradient-card: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
@@ -138,15 +135,30 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply text-foreground bg-background font-sans antialiased;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
   }
-
+  input, button, select, textarea {
+    font-family: inherit;
+  }
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl;
+  }
+  
+  .glass-card {
+    @apply bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl hover:bg-white/[0.04] transition-all duration-500;
+  }
+
+  .premium-text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40;
   }
 }
 
@@ -166,6 +178,10 @@
 
   .glow {
     box-shadow: var(--shadow-glow);
+  }
+
+  .dynamic-progress {
+    width: var(--progress-width, 0%);
   }
 
   @keyframes live-pulse {
@@ -235,4 +251,25 @@
   .animate-score-pop {
     animation: score-pop 0.3s ease-out;
   }
+
+  .stagger-item:nth-child(1) { animation-delay: 50ms; }
+  .stagger-item:nth-child(2) { animation-delay: 100ms; }
+  .stagger-item:nth-child(3) { animation-delay: 150ms; }
+  .stagger-item:nth-child(4) { animation-delay: 200ms; }
+  .stagger-item:nth-child(5) { animation-delay: 250ms; }
+  .stagger-item:nth-child(6) { animation-delay: 300ms; }
+  .stagger-item:nth-child(7) { animation-delay: 350ms; }
+  .stagger-item:nth-child(8) { animation-delay: 400ms; }
+  .stagger-item:nth-child(9) { animation-delay: 450ms; }
+  .stagger-item:nth-child(10) { animation-delay: 500ms; }
+  .stagger-item:nth-child(11) { animation-delay: 550ms; }
+  .stagger-item:nth-child(12) { animation-delay: 600ms; }
+  .stagger-item:nth-child(13) { animation-delay: 650ms; }
+  .stagger-item:nth-child(14) { animation-delay: 700ms; }
+  .stagger-item:nth-child(15) { animation-delay: 750ms; }
+  .stagger-item:nth-child(16) { animation-delay: 800ms; }
+  .stagger-item:nth-child(17) { animation-delay: 850ms; }
+  .stagger-item:nth-child(18) { animation-delay: 900ms; }
+  .stagger-item:nth-child(19) { animation-delay: 950ms; }
+  .stagger-item:nth-child(20) { animation-delay: 1000ms; }
 }

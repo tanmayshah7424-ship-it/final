@@ -120,13 +120,13 @@ function MatchCard({ match, flashId }: { match: CricMatch; flashId: string | nul
                     ].map((team, i) => (
                         <div key={i} className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                                {team.badge ? (
-                                    <img src={team.badge} alt="" className="w-9 h-9 rounded-full object-contain bg-secondary/30 p-0.5 shrink-0" />
-                                ) : (
-                                    <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                                        <span className="text-sm font-bold text-muted-foreground">🏏</span>
-                                    </div>
-                                )}
+                                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0 overflow-hidden">
+                                    {team.badge?.startsWith('http') ? (
+                                        <img src={team.badge} alt="" className="w-full h-full object-contain" />
+                                    ) : (
+                                        <span className="text-sm font-bold">{team.badge || "🏏"}</span>
+                                    )}
+                                </div>
                                 <span className="font-semibold text-sm truncate">{team.name}</span>
                             </div>
                             <span className={`font-mono font-bold text-base shrink-0 transition-colors duration-500 ${isFlashing ? "text-yellow-400" : isLive ? "text-primary" : "text-foreground"}`}>

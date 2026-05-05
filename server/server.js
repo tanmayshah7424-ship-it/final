@@ -102,7 +102,7 @@ const start = async () => {
             server.listen(PORT, '0.0.0.0', () => {
                 console.log(`🚀 Server running on port ${PORT}`);
                 console.log(`📡 Socket.IO ready`);
-                sportsDbService.start();
+                // sportsDbService.start(); // Disabled - specializing for Cricket Only
                 cricApiService.start();
                 // espnPollingService.start(); // Disabled temporarily for stability
             });

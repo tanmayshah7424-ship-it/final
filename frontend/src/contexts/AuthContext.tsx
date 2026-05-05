@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { auth, googleProvider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import api from "@/api/axios";
 
 interface User {
   _id: string;
@@ -27,8 +28,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadUser();
+    const init = async () => {
+      await checkRedirectResult();
+      await loadUser();
+    };
+    init();
   }, []);
+
+  const checkRedirectResult = async () => {
+    try {
+      const result = await getRedirectResult(auth);
+      if (result) {
+        setLoading(true);
+        const firebaseUser = result.user;
+        const res = await api.post("/auth/google", {
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          googleId: firebaseUser.uid
+        });
+        const data = res.data;
+        localStorage.setItem("token", data.token);
+      }
+    } catch (error) {
+      console.error("Redirect Result Error:", error);
+    }
+  };
 
   const loadUser = async () => {
     const token = localStorage.getItem("token");
@@ -38,19 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await fetch("/api/auth/me", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-        localStorage.setItem("user", JSON.stringify(data));
-      } else {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setUser(null);
-      }
+      const res = await api.get("/auth/me");
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
     } catch (error) {
       console.error("Failed to load user", error);
       localStorage.removeItem("token");
@@ -63,44 +77,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      const res = await api.post("/auth/login", { email, password });
+      const data = res.data;
 
       localStorage.setItem("token", data.token);
       // Fetch fresh user data to ensure role is correct
       await loadUser();
       return { error: null };
     } catch (err: any) {
-      return { error: err.message };
+      return { error: err.response?.data?.message || err.message || "Login failed" };
     }
   };
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      const res = await api.post("/auth/register", { name, email, password });
+      const data = res.data;
 
       localStorage.setItem("token", data.token);
       await loadUser();
       return { error: null };
     } catch (err: any) {
-      return { error: err.message };
+      return { error: err.response?.data?.message || err.message || "Registration failed" };
     }
   };
 
@@ -109,27 +107,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
 
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-          googleId: firebaseUser.uid
-        }),
+      const res = await api.post("/auth/google", {
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        googleId: firebaseUser.uid
       });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Google login failed");
-      }
+      const data = res.data;
 
       localStorage.setItem("token", data.token);
       await loadUser();
       return { error: null };
     } catch (err: any) {
       console.error("Google Login Error:", err);
-      return { error: err.message || "Google login failed" };
+      
+      if (err.code === 'auth/popup-blocked') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return { error: null };
+        } catch (redirectErr: any) {
+          return { error: "Popup blocked and redirect failed. Please allow popups for this site." };
+        }
+      }
+
+      if (err.code === 'auth/popup-closed-by-user') {
+        return { error: null }; // User closed it intentionally, no need to show an error
+      }
+      
+      return { error: err.response?.data?.message || err.message || "Google login failed" };
     }
   };
 
@@ -154,3 +158,4 @@ export function useAuth() {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return { ...ctx, isAdmin: ctx.user?.role === "admin" || ctx.user?.role === "superadmin", isSuperAdmin: ctx.user?.role === "superadmin" };
 }
+

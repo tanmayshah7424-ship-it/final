@@ -10,19 +10,27 @@ class SearchService {
 
         const regex = new RegExp(query, 'i');
 
-        // 1. Parallel Local Search
+        // 1. Find matching teams first to handle match searches by team name
+        const matchingTeams = await Team.find({ sport: 'cricket', $or: [{ name: regex }, { shortName: regex }] }).select('_id').lean();
+        const teamIds = matchingTeams.map(t => t._id);
+
+        // 2. Parallel Local Search
         const [matches, teams, players, series] = await Promise.all([
             Match.find({
+                sport: 'cricket',
                 $or: [
-                    { 'teamA.name': regex },
-                    { 'teamB.name': regex },
+                    { teamA: { $in: teamIds } },
+                    { teamB: { $in: teamIds } },
                     { tournament: regex },
                     { venue: regex },
                     { summary: regex }
                 ]
             }).populate('teamA teamB').limit(20).lean(),
-            Team.find({ $or: [{ name: regex }, { shortName: regex }] }).limit(10).lean(),
-            Player.find({ name: regex }).populate('teamId').limit(10).lean(),
+            Team.find({ sport: 'cricket', $or: [{ name: regex }, { shortName: regex }] }).limit(10).lean(),
+            Player.find({ name: regex }).populate({
+                path: 'teamId',
+                match: { sport: 'cricket' }
+            }).limit(20).lean().then(players => players.filter(p => p.teamId)), // Filter players whose team matches cricket
             Series.find({ name: regex }).limit(5).lean()
         ]);
 
@@ -63,8 +71,11 @@ class SearchService {
         if (!query) return [];
         const regex = new RegExp(query, 'i');
 
-        const teams = await Team.find({ name: regex }).select('name logo sport').limit(3).lean();
-        const players = await Player.find({ name: regex }).select('name teamId role').limit(3).lean();
+        const teams = await Team.find({ sport: 'cricket', name: regex }).select('name logo sport').limit(3).lean();
+        const players = await Player.find({ name: regex }).populate({
+            path: 'teamId',
+            match: { sport: 'cricket' }
+        }).select('name teamId role').limit(10).lean().then(players => players.filter(p => p.teamId).slice(0, 3));
 
         return [
             ...teams.map(t => ({ type: 'team', text: t.name, id: t._id, logo: t.logo })),

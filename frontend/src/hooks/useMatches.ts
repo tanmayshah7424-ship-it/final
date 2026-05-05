@@ -27,19 +27,21 @@ export const useMatches = () => {
             externalList = externalRaw.data;
         }
 
-        // Deduplicate by id
+        // Deduplicate and filter for Cricket ONLY
         const seen = new Set<string>();
         const deduped = externalList.filter(m => {
             const key = m.id || m._id;
             if (!key || seen.has(key)) return false;
+            // Filter out football/others
+            if (m.sport && m.sport !== 'cricket') return false;
             seen.add(key);
             return true;
         });
 
         return {
-            live: live.data || [],
-            upcoming: upcoming.data || [],
-            completed: completed.data || [],
+            live: (live.data || []).filter((m: any) => (m.sport || 'cricket') === 'cricket'),
+            upcoming: (upcoming.data || []).filter((m: any) => (m.sport || 'cricket') === 'cricket'),
+            completed: (completed.data || []).filter((m: any) => (m.sport || 'cricket') === 'cricket'),
             external: deduped,
         };
     };

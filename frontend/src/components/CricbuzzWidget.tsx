@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/api/axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
@@ -38,18 +38,18 @@ export const CricbuzzWidget: React.FC<CricbuzzWidgetProps> = ({
                 let url = '';
                 if (type === 'match' && matchId) {
                     // Fetch generic match info or scorecard
-                    url = `/api/cricbuzz/match/${matchId}/hscard`;
+                    url = `/cricbuzz/match/${matchId}/hscard`;
                 } else if (type === 'recent') {
-                    url = '/api/cricbuzz/matches/recent';
+                    url = '/cricbuzz/matches/recent';
                 } else if (type === 'live') {
-                    url = '/api/cricbuzz/matches/live';
+                    url = '/cricbuzz/matches/live';
                 } else if (type === 'upcoming') {
-                    url = '/api/cricbuzz/matches/upcoming';
+                    url = '/cricbuzz/matches/upcoming';
                 }
 
                 if (!url) throw new Error('Invalid widget configuration');
 
-                const response = await axios.get(url);
+                const response = await api.get(url);
                 if (response.data.status === 'success') {
                     setData(response.data.data);
                 } else {
@@ -57,13 +57,14 @@ export const CricbuzzWidget: React.FC<CricbuzzWidgetProps> = ({
                 }
             } catch (err: any) {
                 console.error(err);
-                setError(err.message || 'Error loading widget');
+                setError(err.response?.data?.message || err.message || 'Error loading widget');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
+
 
         // Auto-refresh every 60s
         const interval = setInterval(fetchData, 60000);

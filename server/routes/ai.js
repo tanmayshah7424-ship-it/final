@@ -5,5 +5,6 @@ const aiController = require("../controllers/aiController");
 router.post("/agentic", aiController.processAgenticTask);
 router.post("/fast", aiController.generateFastAnalysis);
 router.post("/plan", aiController.createPlan);
+router.post("/genai", aiController.generateContent);
 
 module.exports = router;

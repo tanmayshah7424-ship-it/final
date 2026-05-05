@@ -3,10 +3,11 @@ const { getCachedMatches: getCricketMatches, getCachedMatchById } = require('../
 
 exports.getLive = async (req, res) => {
     const sport = req.query.sport?.toLowerCase();
-    if (sport === 'football') return res.json({ status: 'success', data: getFootballMatches() });
-    if (sport === 'cricket') return res.json({ status: 'success', data: getCricketMatches() });
-    const all = [...getFootballMatches(), ...getCricketMatches()];
-    res.json({ status: 'success', data: all });
+    // Strictly return Cricket, ignore football/others
+    if (sport === 'football') return res.json({ status: 'success', data: [] });
+    
+    const cricketMatches = getCricketMatches();
+    res.json({ status: 'success', data: cricketMatches });
 };
 
 // GET /api/live/cricket — all cricket matches (live + upcoming + completed)

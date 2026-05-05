@@ -31,31 +31,24 @@ async function searchPlayer(name) {
     const cached = getCached(cacheKey);
     if (cached) return cached;
 
+    let candidate = null;
+
     try {
-        // 1. Try TheSportsDB with exact name
+        // 1. Try TheSportsDB
         let url = `${BASE_URL}/searchplayers.php?p=${encodeURIComponent(name)}`;
         let { data } = await axios.get(url, { timeout: 5000 });
 
-        // 2. Fallback: If no results and multiple words, try just the words if it's a long string
         if (!data.player && name.includes(' ')) {
             const parts = name.split(' ');
-            if (parts.length > 1) {
-                // Try last two words or just last word
-                const surname = parts.slice(-1)[0];
-                url = `${BASE_URL}/searchplayers.php?p=${encodeURIComponent(surname)}`;
-                const fallbackRes = await axios.get(url, { timeout: 5000 });
-                if (fallbackRes.data && fallbackRes.data.player) {
-                    data = fallbackRes.data;
-                }
-            }
+            const surname = parts.slice(-1)[0];
+            url = `${BASE_URL}/searchplayers.php?p=${encodeURIComponent(surname)}`;
+            const fallbackRes = await axios.get(url, { timeout: 5000 });
+            if (fallbackRes.data && fallbackRes.data.player) data = fallbackRes.data;
         }
 
         if (data && data.player && data.player.length > 0) {
-            // Find cricket or first
-            const cricketPlayer = data.player.find(p => p.strSport === 'Cricket');
-            const result = cricketPlayer || data.player[0];
-
-            const simplified = {
+            const result = data.player.find(p => p.strSport?.toLowerCase() === 'cricket') || data.player[0];
+            candidate = {
                 id: result.idPlayer,
                 name: result.strPlayer,
                 fullName: result.strPlayer,
@@ -63,7 +56,7 @@ async function searchPlayer(name) {
                 birthLocation: result.strBirthLocation,
                 nationality: result.strNationality,
                 height: result.strHeight,
-                sport: result.strSport,
+                sport: result.strSport || 'cricket',
                 team: result.strTeam,
                 position: result.strPosition,
                 thumb: result.strThumb,
@@ -74,34 +67,76 @@ async function searchPlayer(name) {
                 instagram: result.strInstagram,
                 source: 'thesportsdb'
             };
-
-            setCache(cacheKey, simplified);
-            return simplified;
+            
+            if (candidate.description && candidate.description.trim().length > 50) {
+                setCache(cacheKey, candidate);
+                return candidate;
+            }
         }
 
-        // 3. Fallback: Search our Local Database (MongoDB)
-        const localPlayers = await Player.find({ $text: { $search: name } }).limit(1);
-        if (localPlayers.length > 0) {
-            const p = localPlayers[0];
-            const localResult = {
-                id: p._id.toString(),
-                name: p.name,
-                fullName: p.name,
-                dob: p.dateOfBirth ? p.dateOfBirth.toISOString().split('T')[0] : '',
-                nationality: p.country || '',
-                sport: p.sport || 'cricket',
-                thumb: p.playerImg || '',
-                description: p.biography || '',
-                source: 'local'
-            };
-            setCache(cacheKey, localResult);
-            return localResult;
+        // 2. Try Local DB if no candidate or no description
+        if (!candidate || !candidate.description) {
+            const localPlayers = await Player.find({ name: new RegExp(name, 'i') }).limit(1);
+            if (localPlayers.length > 0) {
+                const p = localPlayers[0];
+                const localData = {
+                    id: p._id.toString(),
+                    name: p.name,
+                    fullName: p.name,
+                    dob: p.dateOfBirth ? p.dateOfBirth.toISOString().split('T')[0] : '',
+                    nationality: p.country || '',
+                    sport: p.sport || 'cricket',
+                    thumb: p.playerImg || '',
+                    description: p.biography || '',
+                    source: 'local'
+                };
+
+                if (!candidate) {
+                    candidate = localData;
+                } else if (!candidate.description && localData.description) {
+                    candidate.description = localData.description;
+                    candidate.source += '+local';
+                }
+
+                if (candidate.description && candidate.description.trim().length > 50) {
+                    setCache(cacheKey, candidate);
+                    return candidate;
+                }
+            }
         }
 
-        return null;
+        // 3. AI Fallback for Description
+        try {
+            console.log(`[PlayerService] 🔍 Final attempt: Synthesizing biography for ${name}...`);
+            const genAi = require('../../ai/modules/gen');
+            const prompt = `Write a professional, 3-paragraph biography for the cricket player "${name}". Include their role, key achievements, and playing style. Focus on their international career. Format as plain text with newlines.`;
+            
+            const aiBio = await genAi.generate(prompt);
+            if (aiBio && aiBio.length > 30) {
+                if (!candidate) {
+                    candidate = {
+                        id: `ai-${Date.now()}`,
+                        name: name,
+                        fullName: name,
+                        sport: 'cricket',
+                        description: aiBio,
+                        source: 'gen-ai'
+                    };
+                } else {
+                    candidate.description = aiBio;
+                    candidate.source += '+ai';
+                }
+                setCache(cacheKey, candidate);
+                return candidate;
+            }
+        } catch (aiErr) {
+            console.error(`[PlayerService] AI Bio Synthesis failed:`, aiErr.message);
+        }
+
+        return candidate; // Return whatever we managed to find
     } catch (err) {
-        console.error(`Player search error for ${name}:`, err.message);
-        throw err;
+        console.error(`[PlayerService] Global error:`, err.message);
+        return candidate;
     }
 }
 

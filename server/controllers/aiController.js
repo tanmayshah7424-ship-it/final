@@ -1,5 +1,5 @@
-const agenticAi = require("../../agenticai");
-const genAi = require("../../genai");
+const agenticAi = require("../../ai/modules/agentic");
+const genAi = require("../../ai/modules/gen");
 
 /**
  * Handles complex multi-agent missions via CrewAI
@@ -44,5 +44,21 @@ exports.createPlan = async (req, res) => {
         res.json({ plan });
     } catch (error) {
         res.status(500).json({ error: "Planning failed" });
+    }
+};
+
+/**
+ * Explicit handler for General AI Content Generation
+ */
+exports.generateContent = async (req, res) => {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
+    try {
+        const content = await genAi.generate(prompt);
+        res.json({ content });
+    } catch (error) {
+        console.error("[AI Controller] GenAI Error:", error);
+        res.status(500).json({ error: "Generation failed", detail: error.message });
     }
 };

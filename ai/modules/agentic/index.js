@@ -1,6 +1,6 @@
 const { spawn } = require("child_process");
 const path = require("path");
-const genAi = require("../genai");
+const genAi = require("../gen");
 
 class AgenticAiService {
   /**
@@ -11,10 +11,20 @@ class AgenticAiService {
     return new Promise((resolve, reject) => {
       console.log(`[AgenticAI] Mission Kickoff: ${goal}`);
       
-      const pythonProcess = spawn(".venv/Scripts/python.exe", [
-        path.join(__dirname, "../agent_system.py"),
+      const pythonPath = path.join(__dirname, "../../../.venv/Scripts/python.exe");
+      
+      const pythonProcess = spawn(pythonPath, [
+        path.join(__dirname, "../../engine/agent_system.py"),
         goal
-      ]);
+      ], {
+        cwd: path.join(__dirname, "../../.."),
+        env: { 
+          ...process.env, 
+          PYTHONIOENCODING: "utf-8",
+          PYTHONUTF8: "1",
+          OTEL_SDK_DISABLED: "true"
+        }
+      });
 
       let result = "";
       let error = "";
@@ -27,16 +37,28 @@ class AgenticAiService {
         error += data.toString();
       });
 
+      pythonProcess.on("error", (err) => {
+        console.error("[AgenticAI] Failed to start python process:", err);
+        reject(err);
+      });
+
       pythonProcess.on("close", (code) => {
         if (code !== 0) {
           console.error("[AgenticAI] Mission Error:", error);
           reject(new Error(error || "Mission failed"));
         } else {
           try {
-            const parsed = JSON.parse(result);
-            resolve(parsed.report);
+            // Attempt to find the JSON object in the output (in case of log pollution)
+            const jsonStart = result.lastIndexOf('{"report":');
+            if (jsonStart !== -1) {
+              const jsonStr = result.substring(jsonStart);
+              const parsed = JSON.parse(jsonStr);
+              resolve(parsed.report);
+            } else {
+              resolve(result.trim()); // Fallback to raw output
+            }
           } catch (e) {
-            resolve(result); // Return raw if JSON fails
+            resolve(result.trim()); 
           }
         }
       });

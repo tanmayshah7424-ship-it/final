@@ -30,7 +30,7 @@ const Matches = () => {
 
   const fetchMatches = async () => {
     try {
-      const params: any = {};
+      const params: any = { sport: "cricket" };
       if (statusFilter) params.status = statusFilter;
       const res = await matchesAPI.getAll(params);
       setMatches(res.data);
@@ -65,7 +65,7 @@ const Matches = () => {
           </div>
           <div>
             <h1 className="text-3xl font-bold">Matches</h1>
-            <p className="text-sm text-muted-foreground">All matches across sports</p>
+            <p className="text-sm text-muted-foreground">All cricket matches</p>
           </div>
         </div>
 

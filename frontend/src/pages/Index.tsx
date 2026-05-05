@@ -45,16 +45,25 @@ interface ExternalMatch {
 }
 
 const sportColors: Record<string, string> = {
-  cricket: "bg-sport-cricket/10 text-sport-cricket border-sport-cricket/30",
-  football: "bg-sport-football/10 text-sport-football border-sport-football/30",
-  basketball: "bg-sport-basketball/10 text-sport-basketball border-sport-basketball/30",
-  tennis: "bg-sport-tennis/10 text-sport-tennis border-sport-tennis/30",
+  cricket: "bg-sport-cricket/10 text-sport-cricket border-sport-cricket/30"
 };
 
 import { useMatches } from "@/hooks/useMatches";
 
 const Index = () => {
-  const { liveMatches, upcomingMatches, completedMatches, externalMatches, loading } = useMatches();
+  const { 
+    liveMatches: rawLive, 
+    upcomingMatches: rawUpcoming, 
+    completedMatches: rawCompleted, 
+    externalMatches: rawExternal, 
+    loading 
+  } = useMatches();
+
+  // Strict Cricket Filter
+  const liveMatches = rawLive.filter(m => (m.sport || 'cricket') === 'cricket');
+  const upcomingMatches = rawUpcoming.filter(m => (m.sport || 'cricket') === 'cricket');
+  const completedMatches = rawCompleted.filter(m => (m.sport || 'cricket') === 'cricket');
+  const externalMatches = rawExternal.filter(m => (m.sport || 'cricket') === 'cricket');
   const [activeSport, setActiveSport] = useState("all");
   const navigate = useNavigate();
 
@@ -130,10 +139,7 @@ const Index = () => {
 
   // External match card (TheSportsDB + CricAPI data)
   const ExternalMatchCard = ({ match }: { match: ExternalMatch }) => {
-    const isCricket = match.sport === "cricket";
-    const sportBadge = isCricket
-      ? { label: "🏏 CRICKET", classes: sportColors.cricket || "bg-orange-500/10 text-orange-400 border-orange-400/30" }
-      : { label: "⚽ FOOTBALL", classes: sportColors.football };
+    const sportBadge = { label: "🏏 CRICKET", classes: sportColors.cricket || "bg-orange-500/10 text-orange-400 border-orange-400/30" };
 
     // CricAPI images are direct URLs; TheSportsDB images support /tiny suffix
     const badgeUrl = (url: string) => {
@@ -172,11 +178,7 @@ const Index = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between hover:translate-x-1 transition-transform gap-4">
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              {match.homeBadge ? (
-                <img src={badgeUrl(match.homeBadge)} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
-              ) : (
-                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "⚽"}</span>
-              )}
+                <span className="text-4xl shrink-0">🏏</span>
               <span className="font-semibold text-lg tracking-tight truncate">{match.homeTeam || 'TBD'}</span>
             </div>
             <span className="font-mono font-bold text-xl sm:text-2xl text-primary animate-score-pop text-right whitespace-nowrap">
@@ -185,11 +187,7 @@ const Index = () => {
           </div>
           <div className="flex items-center justify-between hover:translate-x-1 transition-transform delay-75 gap-4">
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              {match.awayBadge ? (
-                <img src={badgeUrl(match.awayBadge)} alt="" className="w-10 h-10 rounded-sm object-contain shrink-0" />
-              ) : (
-                <span className="text-4xl shrink-0">{isCricket ? "🏏" : "⚽"}</span>
-              )}
+                <span className="text-4xl shrink-0">🏏</span>
               <span className="font-semibold text-lg tracking-tight truncate">{match.awayTeam || 'TBD'}</span>
             </div>
             <span className="font-mono font-bold text-xl sm:text-2xl text-primary text-right whitespace-nowrap">
@@ -255,50 +253,52 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <main className="container py-8 space-y-12">
         {/* Dynamic Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-background p-8 border border-border shadow-sm">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50 pointer-events-none" />
-
-          <div className="relative z-10 space-y-4">
+        <div className="relative overflow-hidden rounded-3xl p-8 md:p-12 border border-border shadow-2xl min-h-[400px] flex items-center group">
+          {/* Background Image with Hover Zoom */}
+          <img 
+            src="/assets/cricket-hero.png"
+            alt="Cricket Hero"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          />
+          {/* Sophisticated Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent" />
+          
+          <div className="relative z-10 space-y-6 max-w-2xl">
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-full bg-live/10 border border-live/20 text-live text-xs font-bold flex items-center gap-2">
+              <span className="px-4 py-1.5 rounded-full bg-live/20 backdrop-blur-md border border-live/30 text-live text-xs font-black flex items-center gap-2 tracking-widest uppercase">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-live opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-live"></span>
                 </span>
-                LIVE NOW
+                Live Intelligence
               </span>
-              <span className="text-muted-foreground text-sm font-medium">
+              <span className="text-white/70 text-sm font-semibold tracking-wide">
                 {visibleLiveLocal.length + visibleLiveExternal.length} Matches In Progress
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
-              Game Time
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-lg">
-              Experience the pulse of the game. Real-time scores and updates from around the globe.
-            </p>
+            <div className="space-y-2">
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase italic italic-shaping">
+                Cricket <span className="text-primary italic-none not-italic">Hub</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-lg">
+                The ultimate destination for live cricket intelligence. Real-time scores and AI-driven match analysis.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4 pt-4">
+              <button onClick={() => navigate('/matches')} className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold hover:opacity-90 transition-all hover:shadow-[0_0_20px_rgba(var(--primary),0.4)]">
+                Watch Live
+              </button>
+              <button onClick={() => navigate('/player-stats')} className="px-8 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full font-bold hover:bg-white/20 transition-all">
+                Player Stats
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Live Matches Grid */}
         <div className="space-y-8">
-          {/* Sport Filter Tabs */}
-          <div className="flex bg-secondary/30 p-1.5 rounded-xl border border-border/50 w-fit backdrop-blur-md">
-            {["all", "cricket", "football", "basketball"].map((sport) => (
-              <button
-                key={sport}
-                onClick={() => setActiveSport(sport)}
-                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all capitalize ${activeSport === sport
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
-                  : "text-muted-foreground hover:text-foreground hover:bg-primary/10"
-                  }`}
-              >
-                {sport}
-              </button>
-            ))}
-          </div>
-
           {!hasLiveMatches ? (
             <div className="text-center py-20 bg-card/30 rounded-3xl border border-white/5 mx-auto max-w-2xl">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
@@ -313,14 +313,12 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {/* Render Local Live Matches */}
               {filteredLocal
-                .filter(m => activeSport === 'all' || m.sport === activeSport)
                 .map((match) => (
                   <MatchCard key={match._id} match={match} />
                 ))}
 
               {/* Render External Live Matches */}
               {filteredExternal
-                .filter(m => activeSport === 'all' || m.sport === activeSport)
                 .map((match) => (
                   <ExternalMatchCard key={match.id} match={match} />
                 ))}
@@ -341,7 +339,7 @@ const Index = () => {
           </div>
 
           {(() => {
-            // Merge DB upcoming + external upcoming (cricket/football)
+            // Merge DB upcoming + external upcoming (cricket)
             const externalUpcoming = externalMatches.filter((m: any) => m.status === 'upcoming');
             const allUpcomingRaw = [...upcomingMatches, ...externalUpcoming];
 

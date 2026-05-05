@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { cn } from "@/lib/utils";
 import { Users, Trophy, Shield, UserCog, LayoutDashboard, Crown, Settings as SettingsIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,12 +16,12 @@ export const AdminLayout = () => {
         { to: "/admin/teams", label: "Teams", icon: Shield },
         { to: "/admin/players", label: "Players", icon: Users },
         { to: "/admin/matches", label: "Matches", icon: Trophy },
+        { to: "/admin/users", label: "Users", icon: Users },
     ];
 
     // Administration - only for superadmin
     const administrationItems = [
         { to: "/admin/manage-admins", label: "Manage Admins", icon: UserCog },
-        { to: "/admin/users", label: "User Management", icon: Users },
         { to: "/admin/system-settings", label: "System Settings", icon: SettingsIcon },
     ];
 

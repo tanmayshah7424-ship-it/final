@@ -20,9 +20,9 @@ const safeEmit = (event, data, room) => {
 
 exports.getAll = async (req, res, next) => {
     try {
-        const filter = {};
+        const filter = { sport: 'cricket' }; // Default to cricket only
         if (req.query.status) filter.status = req.query.status;
-        if (req.query.sport) filter.sport = req.query.sport;
+        // if (req.query.sport) filter.sport = req.query.sport; // Override if needed, but strictly cricket for now
         const matches = await populateTeams(Match.find(filter)).sort({ date: -1 });
         res.json(matches);
     } catch (error) {
@@ -32,7 +32,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getLive = async (req, res, next) => {
     try {
-        const matches = await populateTeams(Match.find({ status: 'live' })).sort({ date: -1 });
+        const matches = await populateTeams(Match.find({ status: 'live', sport: 'cricket' })).sort({ date: -1 });
         res.json(matches);
     } catch (error) {
         next(error);
@@ -41,7 +41,7 @@ exports.getLive = async (req, res, next) => {
 
 exports.getUpcoming = async (req, res, next) => {
     try {
-        const matches = await populateTeams(Match.find({ status: 'upcoming' })).sort({ date: 1 });
+        const matches = await populateTeams(Match.find({ status: 'upcoming', sport: 'cricket' })).sort({ date: 1 });
         res.json(matches);
     } catch (error) {
         next(error);
@@ -138,14 +138,15 @@ exports.remove = async (req, res, next) => {
 
 exports.getStats = async (req, res, next) => {
     try {
-        const [total, live, upcoming, completed] = await Promise.all([
-            Match.countDocuments(),
-            Match.countDocuments({ status: 'live' }),
-            Match.countDocuments({ status: 'upcoming' }),
-            Match.countDocuments({ status: 'completed' }),
+        const [total, live, upcoming, completed, teamCount, userCount] = await Promise.all([
+            Match.countDocuments({ sport: 'cricket' }),
+            Match.countDocuments({ status: 'live', sport: 'cricket' }),
+            Match.countDocuments({ status: 'upcoming', sport: 'cricket' }),
+            Match.countDocuments({ status: 'completed', sport: 'cricket' }),
+            Team.countDocuments({ sport: 'cricket' }),
+            require('../models/User').countDocuments(),
         ]);
-        const teamCount = await Team.countDocuments();
-        res.json({ total, live, upcoming, completed, teamCount });
+        res.json({ total, live, upcoming, completed, teamCount, userCount });
     } catch (error) {
         next(error);
     }
@@ -154,7 +155,8 @@ exports.getStats = async (req, res, next) => {
 exports.getFinished = async (req, res, next) => {
     try {
         const matches = await populateTeams(Match.find({
-            status: { $in: ['finished', 'completed'] }
+            status: { $in: ['finished', 'completed'] },
+            sport: 'cricket'
         })).sort({ date: -1 });
         res.json(matches);
     } catch (error) {

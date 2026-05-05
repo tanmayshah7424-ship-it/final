@@ -23,7 +23,10 @@ const PlayersAdmin = () => {
     const { toast } = useToast();
 
     useEffect(() => {
-        Promise.all([playersAPI.getAll(), teamsAPI.getAll()])
+        Promise.all([
+            playersAPI.getAll({ sport: 'cricket' }), 
+            teamsAPI.getAll({ sport: 'cricket' })
+        ])
             .then(([pRes, tRes]) => {
                 setPlayers(pRes.data);
                 setTeams(tRes.data);
@@ -33,7 +36,7 @@ const PlayersAdmin = () => {
     }, []);
 
     const fetchPlayers = async () => {
-        const res = await playersAPI.getAll();
+        const res = await playersAPI.getAll({ sport: 'cricket' });
         setPlayers(res.data);
     };
 
@@ -182,8 +185,6 @@ const PlayersAdmin = () => {
                             <Label>Sport</Label>
                             <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} title="Select Sport" className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="cricket">Cricket</option>
-                                <option value="football">Football</option>
-                                <option value="basketball">Basketball</option>
                             </select>
                         </div>
 

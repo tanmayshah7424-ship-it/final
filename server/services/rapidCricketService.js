@@ -49,17 +49,20 @@ function normalizeMatch(m) {
         if (awayInn) awayScore = `${awayInn.r}/${awayInn.w} (${awayInn.o})`;
     }
 
-    // Improve team info matching
-    const homeInfo = m.teamInfo?.find(t => {
-        const tName = (t.name || '').toLowerCase();
-        const hName = homeTeam.toLowerCase();
-        return tName.includes(hName) || hName.includes(tName);
-    });
-    const awayInfo = m.teamInfo?.find(t => {
-        const tName = (t.name || '').toLowerCase();
-        const aName = awayTeam.toLowerCase();
-        return tName.includes(aName) || aName.includes(tName);
-    });
+    // Improve team info matching with fuzzy/substring logic
+    const findTeamInfo = (name) => {
+        if (!m.teamInfo || !name) return null;
+        const search = name.toLowerCase();
+        return m.teamInfo.find(t => {
+            const tName = (t.name || '').toLowerCase();
+            const tShort = (t.shortName || '').toLowerCase();
+            return tName.includes(search) || search.includes(tName) || 
+                   (tShort && (tShort.includes(search) || search.includes(tShort)));
+        });
+    };
+
+    const homeInfo = findTeamInfo(homeTeam);
+    const awayInfo = findTeamInfo(awayTeam);
 
     // Determine status
     let status = 'upcoming';
@@ -150,6 +153,11 @@ async function syncToDatabase(normalizedMatches) {
 }
 
 async function poll() {
+    const System = require('../config/systemConfig');
+    if (System.apiMode === 'manual') {
+        console.log('🏏 CricAPI: Manual mode active, skipping automated poll.');
+        return;
+    }
     try {
         console.log('🏏 CricAPI Polling current matches...');
         // CricAPI response shape: { apikey: '...', data: [...] }
@@ -160,7 +168,17 @@ async function poll() {
             return;
         }
 
-        const matches = response.data.map(normalizeMatch);
+        const rawData = response.data || [];
+        const validData = rawData.filter(m => {
+            if (!m.name) return false;
+            if (m.name.includes('http') || m.name.includes('www.')) return false;
+            if (m.name.includes('.com')) return false;
+            // Most real matches have ' vs ' or ' v '
+            if (!m.name.includes(' vs ') && !m.name.includes(' v ')) return false;
+            return true;
+        });
+
+        const matches = validData.map(normalizeMatch);
 
         // Emit socket events for score changes
         const io = getIO();

@@ -10,7 +10,7 @@ const History = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    matchesAPI.getAll({ status: "completed" })
+    matchesAPI.getAll({ status: "completed", sport: "cricket" })
       .then((res) => setMatches(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));

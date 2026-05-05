@@ -14,7 +14,7 @@ const TeamsAdmin = () => {
 
     const fetchTeams = async () => {
         try {
-            const res = await teamsAPI.getAll();
+            const res = await teamsAPI.getAll({ sport: 'cricket' });
             setTeams(res.data);
         } catch (err) {
             console.error(err);
@@ -75,7 +75,7 @@ const TeamsAdmin = () => {
                 <form onSubmit={handleSubmit} className="card-glass rounded-xl p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold">{editingId ? "Edit Team" : "New Team"}</h2>
-                        <button type="button" onClick={resetForm}><X className="w-5 h-5" /></button>
+                        <button type="button" onClick={resetForm} aria-label="Close"><X className="w-5 h-5" /></button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -91,12 +91,8 @@ const TeamsAdmin = () => {
                             <Input value={form.logo} onChange={(e) => setForm({ ...form, logo: e.target.value })} className="bg-secondary/50" placeholder="🏆 or https://..." />
                         </div>
                         <div className="space-y-2">
-                            <Label>Sport</Label>
-                            <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
+                            <select value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })} title="Select Sport" className="w-full rounded-md bg-secondary/50 border border-input px-3 py-2 text-sm">
                                 <option value="cricket">Cricket</option>
-                                <option value="football">Football</option>
-                                <option value="basketball">Basketball</option>
-                                <option value="tennis">Tennis</option>
                             </select>
                         </div>
                     </div>

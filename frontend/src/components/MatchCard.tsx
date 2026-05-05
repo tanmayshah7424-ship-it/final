@@ -12,9 +12,6 @@ interface MatchCardProps {
 
 const sportColors: Record<string, string> = {
   cricket: "border-l-sport-cricket",
-  football: "border-l-sport-football",
-  basketball: "border-l-sport-basketball",
-  tennis: "border-l-sport-tennis",
 };
 
 export function MatchCard({ match, isFav, onToggleFav }: MatchCardProps) {
@@ -40,11 +37,13 @@ export function MatchCard({ match, isFav, onToggleFav }: MatchCardProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {match.teamA.logo ? (
-              <img src={match.teamA.logo} alt={match.teamA.shortName} className="w-8 h-8 object-contain" />
-            ) : (
-              <span className="text-xl">🛡️</span>
-            )}
+            <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center overflow-hidden shrink-0">
+              {match.teamA.logo?.startsWith('http') ? (
+                <img src={match.teamA.logo} alt={match.teamA.shortName} className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-lg">{match.teamA.logo || "🛡️"}</span>
+              )}
+            </div>
             <span className="font-semibold text-lg">{match.teamA.shortName}</span>
           </div>
           <span className={cn("font-mono font-bold text-xl tracking-tight", match.status === "live" && "text-primary animate-pulse")}>
@@ -54,11 +53,13 @@ export function MatchCard({ match, isFav, onToggleFav }: MatchCardProps) {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {match.teamB.logo ? (
-              <img src={match.teamB.logo} alt={match.teamB.shortName} className="w-8 h-8 object-contain" />
-            ) : (
-              <span className="text-xl">🛡️</span>
-            )}
+            <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center overflow-hidden shrink-0">
+              {match.teamB.logo?.startsWith('http') ? (
+                <img src={match.teamB.logo} alt={match.teamB.shortName} className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-lg">{match.teamB.logo || "🛡️"}</span>
+              )}
+            </div>
             <span className="font-semibold text-lg">{match.teamB.shortName}</span>
           </div>
           <span className={cn("font-mono font-bold text-xl tracking-tight", match.status === "live" && "text-primary animate-pulse")}>

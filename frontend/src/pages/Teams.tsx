@@ -18,8 +18,8 @@ const Teams = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Load teams first (publicly available)
-        const teamsRes = await teamsAPI.getAll();
+        // Load teams first (strictly cricket)
+        const teamsRes = await teamsAPI.getAll({ sport: 'cricket' });
         setTeams(teamsRes.data);
 
         // Try to load favorites (only if token exists in localStorage, to avoid unnecessary 401s)
@@ -69,7 +69,7 @@ const Teams = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold">Teams</h1>
-              <p className="text-sm text-muted-foreground">Browse all teams and their statistics</p>
+              <p className="text-sm text-muted-foreground">Browse all cricket teams and their statistics</p>
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-export type Sport = "cricket" | "football" | "basketball" | "tennis";
+export type Sport = "cricket";
 
 export interface Team {
   id: string;
@@ -41,6 +41,6 @@ export interface ScoreEvent {
   matchId: string;
   timestamp: string;
   description: string;
-  type: "run" | "wicket" | "goal" | "foul" | "point" | "boundary" | "six";
+  type: "run" | "wicket" | "boundary" | "six";
   value: number;
 }

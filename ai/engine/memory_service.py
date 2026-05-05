@@ -6,7 +6,7 @@ from datetime import datetime
 class SportsMemory:
     def __init__(self):
         # Initialize persistent ChromaDB client
-        self.client = chromadb.PersistentClient(path="./chroma_db")
+        self.client = chromadb.PersistentClient(path="ai/memory/chroma_db")
         
         # Using default embedding function (sentence-transformers)
         self.embed_fn = embedding_functions.DefaultEmbeddingFunction()

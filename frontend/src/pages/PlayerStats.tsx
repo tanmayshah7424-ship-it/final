@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { playerAPI } from "@/api/endpoints";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Calendar, Ruler, Info, Loader2, Facebook, Twitter, Instagram } from "lucide-react";
+import { Search, MapPin, Calendar, Ruler, Info, Loader2, Facebook, Twitter, Instagram, User, Trash2 } from "lucide-react";
 
 interface PlayerData {
     id: string;
@@ -26,8 +26,8 @@ interface PlayerData {
 }
 
 const POPULAR_PLAYERS = [
-    "Virat Kohli", "Lionel Messi", "LeBron James",
-    "Rohit Sharma", "Cristiano Ronaldo", "MS Dhoni"
+    "Virat Kohli", "Rohit Sharma", "MS Dhoni",
+    "Ben Stokes", "Pat Cummins"
 ];
 
 const PlayerStats = () => {
@@ -69,7 +69,7 @@ const PlayerStats = () => {
                         Player <span className="text-gradient">Profiles</span>
                     </h1>
                     <p className="text-muted-foreground text-lg">
-                        Search for your favorite athletes across all sports
+                        Search for your favorite cricket athletes and legends
                     </p>
                 </div>
 
@@ -92,7 +92,7 @@ const PlayerStats = () => {
                     </form>
 
                     {/* Popular Players */}
-                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start items-center">
                         <span className="text-xs text-muted-foreground self-center">Popular:</span>
                         {POPULAR_PLAYERS.map((name) => (
                             <button
@@ -103,6 +103,16 @@ const PlayerStats = () => {
                                 {name}
                             </button>
                         ))}
+                        
+                        {(player || query) && (
+                            <button
+                                onClick={() => { setPlayer(null); setQuery(""); setError(""); setSearchParams({}); }}
+                                className="text-xs px-3 py-1.5 rounded-full text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 font-bold"
+                            >
+                                <Trash2 className="w-3 h-3" />
+                                Reset
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -158,17 +168,17 @@ const PlayerStats = () => {
                                     {/* Social Links */}
                                     <div className="flex items-center justify-center sm:justify-start gap-3 mt-3">
                                         {player.facebook && (
-                                            <a href={`https://${player.facebook}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#1877F2] transition-colors">
+                                            <a href={`https://${player.facebook}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#1877F2] transition-colors" aria-label="Facebook">
                                                 <Facebook className="w-5 h-5" />
                                             </a>
                                         )}
                                         {player.twitter && (
-                                            <a href={`https://${player.twitter}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#1DA1F2] transition-colors">
+                                            <a href={`https://${player.twitter}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#1DA1F2] transition-colors" aria-label="Twitter">
                                                 <Twitter className="w-5 h-5" />
                                             </a>
                                         )}
                                         {player.instagram && (
-                                            <a href={`https://${player.instagram}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#E4405F] transition-colors">
+                                            <a href={`https://${player.instagram}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#E4405F] transition-colors" aria-label="Instagram">
                                                 <Instagram className="w-5 h-5" />
                                             </a>
                                         )}
@@ -228,7 +238,10 @@ const PlayerStats = () => {
                             {/* Bio Content */}
                             <div className="lg:col-span-2">
                                 <div className="card-glass rounded-xl p-6 space-y-4">
-                                    <h3 className="font-bold border-b border-border/50 pb-2">Biography</h3>
+                                    <h3 className="font-bold border-b border-border/50 pb-2 flex items-center gap-2">
+                                        <User className="w-5 h-5 text-primary" />
+                                        Biography
+                                    </h3>
                                     <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
                                         {player.description ? (
                                             player.description.split('\n').map((para, i) => (

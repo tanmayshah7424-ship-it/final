@@ -37,6 +37,8 @@ import SystemSettings from "./pages/admin/SystemSettings";
 
 import LiveCricket from "./pages/LiveCricket";
 import CricketMatchCenter from "./pages/CricketMatchCenter";
+import GenAI from "./pages/GenAI";
+import AgenticAI from "./pages/AgenticAI";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +69,8 @@ const App = () => (
 
                   <Route path="/live-cricket" element={<LiveCricket />} />
                   <Route path="/live-cricket/:id" element={<CricketMatchCenter />} />
+                  <Route path="/gen-ai" element={<GenAI />} />
+                  <Route path="/agentic-ai" element={<AgenticAI />} />
 
                   {/* Protected Routes */}
                   <Route

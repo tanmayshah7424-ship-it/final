@@ -5,10 +5,7 @@ const eventColors: Record<string, string> = {
   six: "border-l-primary text-primary",
   boundary: "border-l-primary text-primary",
   wicket: "border-l-live text-live",
-  goal: "border-l-sport-football text-sport-football",
-  foul: "border-l-draw text-draw",
   run: "border-l-border text-foreground",
-  point: "border-l-sport-basketball text-sport-basketball",
 };
 
 export function ScoreTimeline({ events }: { events: ScoreEvent[] }) {
@@ -17,14 +14,13 @@ export function ScoreTimeline({ events }: { events: ScoreEvent[] }) {
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
         Ball-by-Ball Commentary
       </h3>
-      {events.map((event, i) => (
+      {events.map((event) => (
         <div
           key={event.id}
           className={cn(
-            "card-glass rounded-md p-3 border-l-4 animate-slide-up",
+            "card-glass rounded-md p-3 border-l-4 animate-slide-up stagger-item",
             eventColors[event.type] || "border-l-border"
           )}
-          style={{ animationDelay: `${i * 50}ms` }}
         >
           <div className="flex items-center justify-between mb-1">
             <span className="font-mono text-xs text-muted-foreground">{event.timestamp}</span>

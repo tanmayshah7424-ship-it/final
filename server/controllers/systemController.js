@@ -1,8 +1,4 @@
-// System settings controller for superadmin functionality
-const System = {
-    apiMode: 'api', // 'api' or 'manual'
-    notifications: [],
-};
+const System = require('../config/systemConfig');
 
 exports.getSettings = async (req, res, next) => {
     try {

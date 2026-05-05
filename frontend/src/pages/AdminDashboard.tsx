@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { matchesAPI, teamsAPI } from "@/api/endpoints";
-import { Activity, Users, Trophy, Calendar, TrendingUp } from "lucide-react";
+import { Activity, Users, Trophy, Calendar, TrendingUp, Shield } from "lucide-react";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState<any>(null);
@@ -25,8 +25,8 @@ const AdminDashboard = () => {
     { label: "Total Matches", value: stats?.total || 0, icon: Trophy, color: "text-primary" },
     { label: "Live Now", value: stats?.live || 0, icon: Activity, color: "text-live" },
     { label: "Upcoming", value: stats?.upcoming || 0, icon: Calendar, color: "text-blue-400" },
-    { label: "Completed", value: stats?.completed || 0, icon: TrendingUp, color: "text-green-400" },
-    { label: "Teams", value: stats?.teamCount || 0, icon: Users, color: "text-amber-400" },
+    { label: "Total Teams", value: stats?.teamCount || 0, icon: Shield, color: "text-amber-400" },
+    { label: "Registered Users", value: stats?.userCount || 0, icon: Users, color: "text-purple-400" },
   ];
 
   return (

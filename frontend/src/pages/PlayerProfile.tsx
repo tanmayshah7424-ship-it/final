@@ -125,8 +125,12 @@ const PlayerProfile = () => {
                     </div>
                 </div>
 
-                {/* Biography Section (Supabase Managed) */}
-                <PlayerBioCard playerId={id || ""} initialData={wikiData} hideHeaderInfo={true} />
+                {/* Biography Section (Supabase Managed with MongoDB Fallback) */}
+                <PlayerBioCard 
+                    playerId={id || ""} 
+                    initialData={wikiData || (player.biography ? { description: player.biography, short_description: null, image_url: player.playerImg } : undefined)} 
+                    hideHeaderInfo={true} 
+                />
 
                 {/* Stats Grid */}
                 {player.stats && player.stats.length > 0 ? (
