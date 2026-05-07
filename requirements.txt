@@ -1,6 +1,6 @@
 crewai
 chromadb
-#sentence-transformers
+sentence-transformers
 google-generativeai
 python-dotenv
 requests

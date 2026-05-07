@@ -1,13 +1,16 @@
+const path = require("path");
 require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
+
 const connectDB = require('./config/db');
 const { initSocket } = require('./socket');
 const errorHandler = require('./middleware/errorHandler');
+
 const sportsDbService = require('./services/sportsDbService');
-const cricApiService = require('./services/rapidCricketService'); // Using RapidAPI service
-const path = require('path');
+const cricApiService = require('./services/rapidCricketService');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,22 +18,23 @@ const server = http.createServer(app);
 // Init Socket.IO
 initSocket(server);
 
-// Middleware – allow all origins so other devices on the LAN can connect
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'] }));
+// Middleware
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+}));
+
 app.use(express.json());
 
-// Note: In Docker, frontend is served separately by nginx
-// This code only runs in non-Docker development mode
-if (process.env.NODE_ENV === 'production' && process.env.SERVE_FRONTEND === 'true') {
-    const frontendPath = path.join(__dirname, '../frontend/dist');
-    try {
-        app.use(express.static(frontendPath));
-    } catch (err) {
-        console.warn('Frontend dist folder not found, skipping static file serving');
-    }
-}
+// ================= FRONTEND SERVING =================
 
-// Routes
+const frontendPath = path.join(__dirname, '../frontend/dist');
+
+// Serve static frontend files
+app.use(express.static(frontendPath));
+
+// ================= API ROUTES =================
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/players', require('./routes/players'));
@@ -45,26 +49,28 @@ app.use('/api/search', require('./routes/search'));
 app.use('/api/cricbuzz', require('./routes/cricbuzz'));
 app.use('/api/ai', require('./routes/ai'));
 
-// Health check
-app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
-
-// Note: In Docker, frontend is served by nginx (separate container)
-// This catch-all only runs if SERVE_FRONTEND is explicitly enabled
-if (process.env.NODE_ENV === 'production' && process.env.SERVE_FRONTEND === 'true') {
-    app.get('*', (req, res) => {
-        const frontendPath = path.resolve(__dirname, '../frontend', 'dist', 'index.html');
-        try {
-            res.sendFile(frontendPath);
-        } catch (err) {
-            res.status(404).json({ error: 'Frontend not found' });
-        }
+// Health Check
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        time: new Date()
     });
-}
+});
 
-// Error handler
+// ================= REACT FRONTEND ROUTE =================
+
+// Important: Must be AFTER API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// ================= ERROR HANDLER =================
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001;
+
+// ================= SUPERADMIN =================
 
 const ensureSuperadmin = async () => {
     const User = require('./models/User');
@@ -80,42 +86,63 @@ const ensureSuperadmin = async () => {
                 password: process.env.SUPERADMIN_PASSWORD || 'Tanmay7424@',
                 role: 'superadmin'
             });
+
             console.log('✅ Superadmin account created:', superadminEmail);
+
         } else if (superadmin.role !== 'superadmin') {
+
             superadmin.role = 'superadmin';
             await superadmin.save();
+
             console.log('✅ Superadmin role restored for:', superadminEmail);
+
         } else {
+
             console.log('✅ Superadmin account exists:', superadminEmail);
         }
+
     } catch (error) {
+
         console.error('❌ Error ensuring superadmin:', error.message);
     }
 };
 
+// ================= SERVER START =================
+
 const start = async () => {
     try {
+
         await connectDB();
+
         await ensureSuperadmin();
-        // Only listen if not in test mode, or if explicitly called
+
         if (process.env.NODE_ENV !== 'test') {
+
             server.listen(PORT, '0.0.0.0', () => {
+
                 console.log(`🚀 Server running on port ${PORT}`);
                 console.log(`📡 Socket.IO ready`);
-                // sportsDbService.start(); // Disabled - specializing for Cricket Only
+
+                // Start CricAPI polling
                 cricApiService.start();
-                // espnPollingService.start(); // Disabled temporarily for stability
+
             });
         }
+
     } catch (err) {
+
         console.error("Server startup error:", err);
     }
 };
 
-// Only auto-start if not imported (main module)
+// Auto Start
 if (require.main === module) {
     start();
 }
 
-module.exports = { app, server, start, connectDB };
-
+module.exports = {
+    app,
+    server,
+    start,
+    connectDB
+};
